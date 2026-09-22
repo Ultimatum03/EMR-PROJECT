@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Appointments</title>
+
+    <link rel="stylesheet" href="appointment.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+<body>
+    <aside class="sidebar">
+        <div>
+            <div class="logo">
+                <i class="fa-solid fa-heart-pulse"></i>
+                <div>
+                    <h2>Nobless EMR</h2>
+                    <p>Electronic Medical Record</p>
+                </div>
+            </div>
+
+            <nav class="sidebar-menu">
+                <a href="dashboard.html"><i class="fa-solid fa-table-columns"></i> Dashboard</a>
+                <a href="registration.html"><i class="fa-solid fa-notes-medical"></i> Registrations</a>
+                <a class="active" href="appointment.html"><i class="fa-regular fa-calendar"></i> Appointments</a>
+            </nav>
+        </div>
+
+        <div class="hospital"><i class="fa-solid fa-hospital"></i> Central Hospital</div>
+    </aside>
+
+    <div class="main-content">
+    <a class="back-link" href="dashboard.html">&larr; Return to Dashboard</a>
+
+    <section class="appointment-box">
+    <div class="appointment-header">
+    <h3>Book Appointment...</h3>
+    <P>Available hours today</P>
+    <ul>
+        <li>9:00 AM</li>
+        <li>9:30 AM</li>
+        <li>9:45 AM</li>
+        <li>10:00 AM</li>
+        <li>12:00 PM</li>
+    </ul>
+    </div>
+    <div class="appointment-form">
+        <h3>Let's Get you started</h3>
+        <form>
+
+    <label for="firstname">First Name</label>
+    <input type="text" id="firstname" name="firstname" placeholder="Enter your first name">
+
+    <label for="surname">Surname</label>
+    <input type="text" id="surname" name="surname" placeholder="Enter your surname">
+
+    <label for="phone">Phone Number</label>
+    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
+
+    <label for="time">Preferred Time</label>
+    <select id="time" name="time">
+        <option value="">Select a time</option>
+        <option value="09:00">9:00</option>
+        <option value="09:30">9:30</option>
+        <option value="09:45">9:45</option>
+        <option value="10:00">10:00</option>
+        <option value="12:00">12:00</option>
+    </select>
+
+    <button type="submit">Book Appointment</button>
+
+</form> 
+    </div>
+    </section>
+    </div>
+</body>
+
+</html>

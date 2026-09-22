@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMR Dashboard</title>
+
+<link rel="stylesheet" href="dashboard.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+<body>
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="logo">
+        <i class="fa-solid fa-heart-pulse"></i>
+        <div>
+            <h2>Nobless EMR</h2>
+            <p>Electronic Medical Record</p>
+        </div>
+    </div>
+
+    <button
+        class="sidebar-toggle"
+        id="sidebarToggle"
+        type="button"
+        aria-label="Collapse sidebar"
+        aria-expanded="true"
+    >
+        <i class="fa-solid fa-bars"></i>
+    </button>
+
+    <ul class="sidebar-menu">
+
+    <!-- Dashboard -->
+    <li class="active">
+        <a href="dashboard.html">
+            <i class="fa-solid fa-table-columns"></i>
+            <span>Dashboard</span>
+        </a>
+    </li>
+
+     <!-- Registrations -->
+    <li>
+        <a href="registration.html">
+            <i class="fa-solid fa-notes-medical"></i>
+            <span>Registrations</span>
+        </a>
+    </li>
+
+
+    <!-- Appointments -->
+    <li>
+        <a href="appointment.html">
+            <i class="fa-regular fa-calendar"></i>
+            <span>Appointments</span>
+        </a>
+    </li>
+
+    <!-- Services -->
+    <li>
+            <details>
+                <summary> <i class="fa-solid fa-stethoscope"></i> Services</summary>
+                    <ul>
+                        <li><a href="#">Laboratory Services</a></li>
+                        <li><a href="#">Scan</a></li>
+                        <li><a href="#">Dental Services</a></li>
+                    </ul>
+            </details>
+    </li>
+
+    <!-- Wards -->
+        <li>
+                <details>
+                    <summary> <i class="fa-solid fa-bed"></i> Wards</summary>
+                    <ul>
+                        <li><a href="#">Children Wards</a></li>
+                        <li><a href="#">Female Wards</a></li>
+                        <li><a href="#">Male Wards</a></li>
+                    </ul>
+                </details>
+            </li>
+
+
+    <!-- Settings -->
+    <li>
+         <a href="setting.html">
+    <i class="fa-solid fa-gear"></i>
+    <span>Settings</span>
+</a>
+    </li>
+
+</ul>
+
+    <div class="bottom">
+        <div class="help"><i class="fa-solid fa-headset"></i><span>Need Help?</span></div>
+        <div class="hospital"><i class="fa-solid fa-hospital"></i><span>Central Hospital</span></div>
+    </div>
+</div>
+
+<!-- Main -->
+<div class="main">
+    
+<!-- Navbar -->
+<header>
+    <div class="search"><i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Search patients, encounters, prescriptions...">
+    </div>
+
+    <div class="profile">
+        <i class="fa-regular fa-bell"></i>
+        <img src="https://i.pravatar.cc/45">
+    <div>
+        <h4>Noblesses</h4><span>Admin</span>
+    </div>
+    </div>
+</header>
+
+
+<!-- DASHBOARD INTRO -->
+<section class="dashboard-intro">
+
+    <div class="greeting">
+        <h1 id="greetingText">Good Morning, Admin 👋</h1>
+    </div>
+
+</section>
+
+<!-- SUMMARY CARDS -->
+<section class="summary-cards">
+
+    <div class="summary-card">
+        <div class="card-icon">👥</div>
+        <div class="card-content">
+            <p>Total Patients</p>
+            <h2>0</h2>
+            <span>Registered patients</span>
+        </div>
+    </div>
+
+    <div class="summary-card">
+        <div class="card-icon">📅</div>
+        <div class="card-content">
+            <p>Appointments</p>
+            <h2>0</h2>
+            <span>Today's appointments</span>
+        </div>
+    </div>
+
+    <div class="summary-card">
+        <div class="card-icon">🏥</div>
+        <div class="card-content">
+            <p>Patient Queue</p>
+            <h2>0</h2>
+            <span>Currently waiting</span>
+        </div>
+    </div>
+
+    <div class="summary-card">
+        <div class="card-icon">🛏️</div>
+        <div class="card-content">
+            <p>Beds Occupied</p>
+            <h2>0 / 50</h2>
+            <span>Hospital occupancy</span>
+        </div>
+    </div>
+
+</section>
+
+
+<div class="dashboard-panels">
+<section class="schedule">
+
+    <div class="schedule-header">
+        <h2>📅 Today's Schedule</h2>
+        <button>View all appointments →</button>
+    </div>
+
+    <div class="appointment">
+        <span class="time">9:00 AM</span>
+
+        <div class="patient">
+            <strong>jamie carragher</strong>
+            <small>Follow-up • 30 min</small>
+        </div>
+
+        <span class="status completed">✓ Completed</span>
+    </div>
+
+    <div class="appointment">
+        <span class="time">9:30 AM</span>
+
+        <div class="patient">
+            <strong>Lola williams</strong>
+            <small>Annual Physical • 30 min</small>
+        </div>
+
+        <span class="status completed">✓ Completed</span>
+    </div>
+
+    <div class="appointment">
+        <span class="time">10:15 AM</span>
+
+        <div class="patient">
+            <strong>Young blood</strong>
+            <small>New Patient • 30 min</small>
+        </div>
+
+        <span class="status upcoming">◷ Upcoming</span>
+    </div>
+
+    <div class="appointment">
+        <span class="time">10:45 AM</span>
+
+        <div class="patient">
+            <strong>Mid Wife</strong>
+            <small>Follow-up • 30 min</small>
+        </div>
+
+        <span class="status upcoming">✓ Upcoming</span>
+    </div>
+
+</section>
+
+<section class="clinic-panel">
+<div class="clinic-header">
+    <h2>👥Current Patient in the clinic </h2>
+    <span>3</span>
+</div>
+<div class="patients">
+    <div class="patients-icon">JC</div>
+    <div class="patients-info">
+        <h3>J.Carragher</h3>
+        <p>Checked in . 9:45 AM</p>
+    </div>
+    <div class="status">With nurse</div>
+</div>
+<div class="patients">
+    <div class="patients-icon">BJ</div>
+    <div class="patients-info">
+        <h3>B.johnson</h3>
+        <p> Checked in . 10:00</p>
+    </div>
+    <div class="status">Waiting</div>
+</div>
+<div class="patients">
+    <div class="patients-icon">PS</div>
+    <div class="patients-info">
+        <h3>P.sussy</h3>
+        <p> Checked in . 10:35</p>
+    </div>
+    <div class="status">Waiting</div>
+</div>
+</section>
+</div>
+
+</div>
+</div>
+
+
+<script src="dashboard.js"></script>
+
+</body>
+</html>
