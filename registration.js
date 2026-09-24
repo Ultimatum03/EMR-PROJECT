@@ -1,43 +1,36 @@
 const patientForm = document.getElementById("patientForm");
 
 const registrationForm = document.getElementById("registrationForm");
+const emergencyRegistration = document.getElementById("emergencyRegistration");
 const patientRecords = document.getElementById("patientRecords");
+const registrationTitle = document.getElementById("registrationTitle");
+const registrationSubtitle = document.getElementById("registrationSubtitle");
 
 const patientTableBody = document.getElementById("patientTableBody");
-const registerNewPatientButton = document.getElementById("registerNewPatientButton");
-const newPatientOptions = document.getElementById("newPatientOptions");
-const registrationType = document.getElementById("registrationType");
+const statusFilter = document.getElementById("statusFilter");
 
-registerNewPatientButton.addEventListener("click", function () {
-    const isOpen = !newPatientOptions.classList.contains("hidden");
-
-    newPatientOptions.classList.toggle("hidden", isOpen);
-    registerNewPatientButton.setAttribute("aria-expanded", String(!isOpen));
-});
-
-newPatientOptions.addEventListener("click", function (event) {
-    const option = event.target.closest("[data-registration-type]");
-
-    if (!option) {
-        return;
-    }
-
-    showRegistrationForm(option.dataset.registrationType);
-    newPatientOptions.classList.add("hidden");
-    registerNewPatientButton.setAttribute("aria-expanded", "false");
-});
+let isEmergencyRegistration = false;
 
 
 // SHOW REGISTRATION FORM
 
-function showRegistrationForm(type = "register") {
+function showRegistrationForm(isEmergency = false) {
+
+    isEmergencyRegistration = isEmergency;
+
+    if (isEmergencyRegistration) {
+        registrationTitle.textContent = "Emergency Patient Registration";
+        registrationSubtitle.textContent = "Register the identified emergency patient and tag the record as emergency.";
+    } else {
+        registrationTitle.textContent = "New Patient Registration";
+        registrationSubtitle.textContent = "Enter the patient's information below";
+    }
 
     registrationForm.classList.remove("hidden");
 
     patientRecords.classList.add("hidden");
 
     document.body.classList.add("modal-open");
-    registrationType.value = type;
 
     document.getElementById("firstName").focus();
 
@@ -49,9 +42,27 @@ function showRegistrationForm(type = "register") {
 function closeRegistrationForm() {
 
     registrationForm.classList.add("hidden");
-
+    isEmergencyRegistration = false;
+    registrationTitle.textContent = "New Patient Registration";
+    registrationSubtitle.textContent = "Enter the patient's information below";
     document.body.classList.remove("modal-open");
 
+}
+
+function showEmergencyRegistration() {
+    emergencyRegistration.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+}
+
+function closeEmergencyRegistration() {
+    emergencyRegistration.classList.add("hidden");
+    document.body.classList.remove("modal-open");
+}
+
+function handleEmergencyBackdropClick(event) {
+    if (event.target === emergencyRegistration) {
+        closeEmergencyRegistration();
+    }
 }
 
 
@@ -116,6 +127,15 @@ patientForm.addEventListener("submit", function(event) {
         email:
             document.getElementById("email").value,
 
+        address:
+            document.getElementById("address").value,
+
+        bloodGroup:
+            document.getElementById("bloodGroup").value,
+
+        genotype:
+            document.getElementById("genotype").value,
+
         nextOfKin:
             document.getElementById("nextOfKin").value,
 
@@ -125,10 +145,11 @@ patientForm.addEventListener("submit", function(event) {
         nextOfKinPhone:
             document.getElementById("nextOfKinPhone").value,
 
-        nextOfKinAddress:
-            document.getElementById("nextOfKinAddress").value,
+        isEmergency:
+            isEmergencyRegistration,
 
-        status: registrationType.value === "emergency" ? "Emergency" : "Active"
+        patientType:
+            isEmergencyRegistration ? "Emergency" : "Routine"
 
     };
 
@@ -147,24 +168,30 @@ patientForm.addEventListener("submit", function(event) {
 
 
     alert(
-        (patient.status === "Emergency" ? "Emergency case saved successfully!" : "Patient registered successfully!")
-        + "\n\nPatient ID: "
-        + patient.id
+        "Patient registered successfully!\n\nPatient ID: "
+        + patient.id + "\nRegistration Type: "
+        + (patient.patientType || "Routine")
     );
 
 
+    isEmergencyRegistration = false;
+    registrationTitle.textContent = "New Patient Registration";
+    registrationSubtitle.textContent = "Enter the patient's information below";
     patientForm.reset();
-    registrationType.value = "register";
 
 });
 
 
 document.addEventListener("keydown", function(event) {
 
-    if (event.key === "Escape" && !registrationForm.classList.contains("hidden")) {
+    if (event.key !== "Escape") {
+        return;
+    }
 
+    if (!registrationForm.classList.contains("hidden")) {
         closeRegistrationForm();
-
+    } else if (!emergencyRegistration.classList.contains("hidden")) {
+        closeEmergencyRegistration();
     }
 
 });
@@ -184,65 +211,40 @@ function generatePatientID() {
 
 // LOAD PATIENTS
 
+function getFilteredPatients(patients) {
+
+    const search =
+        document.getElementById("searchPatient").value.toLowerCase();
+
+    const selectedStatus =
+        statusFilter ? statusFilter.value : "All";
+
+
+    return patients.filter(function(patient) {
+
+        const matchesSearch =
+            !search ||
+            (patient.id && patient.id.toLowerCase().includes(search)) ||
+            (patient.firstName && patient.firstName.toLowerCase().includes(search)) ||
+            (patient.lastName && patient.lastName.toLowerCase().includes(search)) ||
+            (patient.phone && patient.phone.toLowerCase().includes(search));
+
+        const matchesStatus =
+            selectedStatus === "All" ||
+            (patient.patientType || "Routine") === selectedStatus;
+
+        return matchesSearch && matchesStatus;
+
+    });
+
+}
+
 function loadPatients() {
 
     const patients =
         JSON.parse(localStorage.getItem("patients")) || [];
 
-
-    patientTableBody.innerHTML = "";
-
-
-    if (patients.length === 0) {
-
-        patientTableBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="empty-state">
-                    No patients registered yet.
-                </td>
-            </tr>
-        `;
-
-        return;
-
-    }
-
-
-    patients.forEach(function(patient) {
-
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-
-            <td>${patient.id}</td>
-
-            <td>
-                ${patient.firstName}
-                ${patient.lastName}
-            </td>
-
-            <td>${patient.gender}</td>
-
-            <td>${patient.dateOfBirth}</td>
-
-            <td>${patient.phone}</td>
-
-            <td>${patient.status}</td>
-
-            <td>
-                <button
-                    class="secondary-btn"
-                    onclick="viewPatient('${patient.id}')"
-                >
-                    View
-                </button>
-            </td>
-
-        `;
-
-        patientTableBody.appendChild(row);
-
-    });
+    displayPatients(getFilteredPatients(patients));
 
 }
 
@@ -306,49 +308,15 @@ document
     .getElementById("searchPatient")
     .addEventListener("input", function() {
 
-        const search =
-            this.value.toLowerCase();
-
-
-        const patients =
-            JSON.parse(localStorage.getItem("patients")) || [];
-
-
-        const filtered =
-            patients.filter(function(patient) {
-
-                return (
-
-                    patient.id
-                        .toLowerCase()
-                        .includes(search)
-
-                    ||
-
-                    patient.firstName
-                        .toLowerCase()
-                        .includes(search)
-
-                    ||
-
-                    patient.lastName
-                        .toLowerCase()
-                        .includes(search)
-
-                    ||
-
-                    patient.phone
-                        .toLowerCase()
-                        .includes(search)
-
-                );
-
-            });
-
-
-        displayPatients(filtered);
+        loadPatients();
 
     });
+
+if (statusFilter) {
+    statusFilter.addEventListener("change", function() {
+        loadPatients();
+    });
+}
 
 
 // DISPLAY PATIENTS
@@ -392,7 +360,11 @@ function displayPatients(patients) {
 
             <td>${patient.phone}</td>
 
-            <td>${patient.status}</td>
+            <td>
+                <span class="status-badge ${patient.patientType === "Emergency" ? "status-emergency" : "status-regular"}">
+                    ${patient.patientType === "Emergency" ? "Emergency" : "Routine"}
+                </span>
+            </td>
 
             <td>
                 <button

@@ -135,48 +135,32 @@ body {
     margin-bottom: 25px;
 }
 
-.submit-menu {
-    position: relative;
-}
-
-.submit-menu-button {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.submit-menu-options {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    z-index: 2;
-    min-width: 170px;
-    padding: 5px;
-    border: 1px solid #d1d5db;
-    border-radius: 7px;
-    background: white;
-    box-shadow: 0 5px 14px rgba(0, 0, 0, 0.12);
-}
-
-.submit-menu-options button {
-    display: block;
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 5px;
-    background: transparent;
-    color: #123c69;
-    text-align: left;
-    font-size: 14px;
-}
-
-.submit-menu-options button:hover {
-    background: #eef3f8;
-}
-
 button {
     border: none;
     cursor: pointer;
     font-family: inherit;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 96px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.status-emergency {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.status-regular {
+    background: #dcfce7;
+    color: #166534;
 }
 
 .primary-btn {
@@ -283,6 +267,27 @@ button {
     font-size: 13px;
 }
 
+.search-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.search-controls input,
+.status-filter {
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    min-width: 180px;
+    background: white;
+}
+
+.status-filter {
+    min-width: 140px;
+}
+
 
 /* SECTION */
 
@@ -353,10 +358,6 @@ button {
 
 .full-width {
     grid-column: 1 / -1;
-}
-
-.next-of-kin-address {
-    grid-column: 2;
 }
 
 
@@ -458,10 +459,6 @@ th {
         grid-column: auto;
     }
 
-    .next-of-kin-address {
-        grid-column: auto;
-    }
-
 }
 
 
@@ -512,4 +509,193 @@ th {
         width: 100%;
     }
 
+}
+
+
+/* =========================================
+   EMERGENCY PATIENT BUTTON
+========================================= */
+
+.emergency-btn {
+    background: #fff4f4;
+    color: #c62828;
+
+    border: 1px solid #e6a5a5;
+
+    padding: 12px 18px;
+
+    border-radius: 6px;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    cursor: pointer;
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    transition: all 0.2s ease;
+}
+
+.emergency-btn span {
+    width: 22px;
+    height: 22px;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #ffe0e0;
+
+    color: #c62828;
+
+    border-radius: 50%;
+
+    font-size: 13px;
+}
+
+.emergency-btn:hover {
+    background: #ffe8e8;
+
+    border-color: #c62828;
+
+    transform: translateY(-1px);
+}
+
+.emergency-selection {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.emergency-option {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    height: 120px;
+    padding: 20px;
+    border: 2px solid #e4eaf0;
+    border-radius: 10px;
+    background: #ffffff;
+    color: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.emergency-option:hover {
+    transform: translateY(-2px);
+    border-color: #287ff0;
+    box-shadow: 0 7px 18px rgba(40, 127, 240, 0.1);
+}
+
+.emergency-option:focus-visible {
+    outline: 3px solid rgba(40, 127, 240, 0.25);
+    outline-offset: 2px;
+}
+
+.emergency-option.unidentified-option {
+    border-color: #ffd5d5;
+}
+
+.emergency-option.unidentified-option:hover {
+    border-color: #ef5350;
+    box-shadow: 0 7px 18px rgba(239, 83, 80, 0.1);
+}
+
+.option-icon {
+    display: flex;
+    flex: 0 0 48px;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 10px;
+    background: #eaf3ff;
+    color: #287ff0;
+    font-size: 19px;
+}
+
+.unidentified-option .option-icon {
+    background: #fff0f0;
+    color: #ef5350;
+}
+
+.option-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 18px;
+}
+
+.option-content strong {
+    margin-bottom: 8px;
+    color: #243b53;
+    font-size: 14px;
+}
+
+.option-content span {
+    color: #7c8b99;
+    font-size: 11px;
+    line-height: 1.6;
+}
+
+.option-arrow {
+    position: absolute;
+    right: 16px;
+    bottom: 18px;
+    color: #a1adba;
+    font-size: 12px;
+}
+
+.emergency-option:hover .option-arrow {
+    color: #287ff0;
+}
+
+.unidentified-option:hover .option-arrow {
+    color: #ef5350;
+}
+
+.emergency-modal-card .emergency-selection {
+    margin: 0;
+}
+
+.emergency-modal-card .emergency-option {
+    width: 100%;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.emergency-modal-card .option-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 25px;
+}
+
+.emergency-modal-card .option-content strong {
+    color: #243b53;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.emergency-modal-card .option-content span {
+    color: #7c8b99;
+    font-size: 11px;
+    line-height: 1.7;
+}
+
+@media (max-width: 900px) {
+    .emergency-selection {
+        grid-template-columns: 1fr;
+    }
+
+    .emergency-option {
+        min-height: 125px;
+    }
 }
