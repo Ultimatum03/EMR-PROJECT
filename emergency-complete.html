@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Emergency Registration Complete</title>
+
+    <link rel="stylesheet" href="emergency-complete.css">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            <h2>EMR</h2>
+            <p>Medical System</p>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            <a href="dashboard.html">
+                <span>🏠</span>
+                Dashboard
+            </a>
+
+            <a href="registration.html" class="active">
+                <span>📝</span>
+                Registration
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <h2>Emergency Registration</h2>
+            </div>
+
+            <div class="topbar-right">
+
+                <div class="notification">
+                    🔔
+                </div>
+
+                <div class="user-info">
+                    <strong>Taryn</strong>
+                    <span>Record officer</span>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <section class="emergency-complete-container">
+
+            <div class="summary-top-row">
+
+                <!-- SUCCESS MESSAGE -->
+                <div class="registration-success">
+
+                    <div class="success-icon">
+                        ✓
+                    </div>
+
+                    <h1>Patient Registered Successfully</h1>
+
+                </div>
+
+
+                <!-- PATIENT ID -->
+                <div class="emergency-id-card">
+
+                    <div>
+                        <span class="id-label">
+                            Emergency Patient ID
+                        </span>
+
+                        <h2 id="emergencyPatientId">
+                            Generating...
+                        </h2>
+                    </div>
+
+                    <div class="id-status">
+                        <span>●</span>
+                        Emergency
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PATIENT SUMMARY -->
+            <div class="completion-card">
+
+                <div class="completion-card-header">
+
+                    <div>
+                        <h3>Patient Information</h3>
+                        <p>Emergency registration details</p>
+                    </div>
+
+                    <span class="completion-badge">
+                        Registered
+                    </span>
+
+                </div>
+
+
+                <div class="patient-summary-grid">
+
+                    <div class="summary-item">
+                        <span>Patient Name</span>
+                        <strong id="patientName">
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Sex</span>
+                        <strong id="patientSex">
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Estimated Age</span>
+                        <strong id="patientAge">
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Arrival Date</span>
+                        <strong id="arrivalDate">
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Arrival Time</span>
+                        <strong id="arrivalTime">
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Mode of Arrival</span>
+                        <strong id="arrivalMode">
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Identification Status</span>
+                        <strong id="identificationStatus">
+                            —
+                        </strong>
+                    </div>
+
+                    <div class="summary-item">
+                        <span>Triage Category</span>
+                        <strong id="triageCategory">
+                            —
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ADDITIONAL INFORMATION -->
+            <div class="completion-card">
+
+                <div class="completion-card-header">
+
+                    <div>
+                        <h3>Additional Information</h3>
+                        <p>Emergency identification and notes</p>
+                    </div>
+
+                </div>
+
+
+                <div class="additional-info-grid">
+
+                    <div class="info-block">
+
+                        <span>Physical Description</span>
+
+                        <p id="physicalDescription">
+                            No description provided.
+                        </p>
+
+                    </div>
+
+
+                    <div class="info-block">
+
+                        <span>Identification Notes</span>
+
+                        <p id="identificationNotes">
+                            No identification notes provided.
+                        </p>
+
+                    </div>
+
+
+                    <div class="info-block">
+
+                        <span>Other Notes</span>
+
+                        <p id="otherNotes">
+                            No additional notes provided.
+                        </p>
+
+                    </div>
+
+
+                    <div class="info-block">
+
+                        <span>Police / Medico-Legal Case</span>
+
+                        <p id="medicoLegal">
+                            No
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- ACTIONS -->
+            <div class="completion-actions">
+
+                <button
+                    class="secondary-btn"
+                    onclick="window.print()">
+
+                    🖨 Print Registration
+
+                </button>
+
+
+                <button
+                    class="secondary-btn"
+                    onclick="registerAnotherEmergency()">
+
+                    + Register Another Emergency
+
+                </button>
+
+
+                <button
+                    class="primary-btn"
+                    onclick="goToDashboard()">
+
+                    Go to Dashboard →
+
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+    /*
+     * LOAD EMERGENCY PATIENT
+     */
+
+    const savedPatient =
+        sessionStorage.getItem("emergencyPatient");
+
+
+    if (!savedPatient) {
+
+        alert(
+            "No emergency registration data was found."
+        );
+
+        window.location.href =
+            "emergency-unidentified.html";
+
+    }
+
+
+    const patient =
+        JSON.parse(savedPatient);
+
+
+    /*
+     * GENERATE EMERGENCY PATIENT ID
+     */
+
+    let emergencyId =
+        patient.emergencyId;
+
+
+    if (!emergencyId) {
+
+        const year =
+            new Date().getFullYear();
+
+        const randomNumber =
+            Math.floor(
+                100000 +
+                Math.random() * 900000
+            );
+
+        emergencyId =
+            `ER-${year}-${randomNumber}`;
+
+        patient.emergencyId =
+            emergencyId;
+
+        sessionStorage.setItem(
+            "emergencyPatient",
+            JSON.stringify(patient)
+        );
+
+    }
+
+
+    const savedRecords = JSON.parse(
+        localStorage.getItem("unidentifiedEmergencyRecords") || "[]"
+    );
+
+    const recordIndex = savedRecords.findIndex(function (savedRecord) {
+        return savedRecord.emergencyId === patient.emergencyId
+            || (
+                savedRecord.temporaryName === patient.temporaryName
+                && savedRecord.arrivalDate === patient.arrivalDate
+                && savedRecord.arrivalTime === patient.arrivalTime
+            );
+    });
+
+    if (recordIndex >= 0) {
+        savedRecords[recordIndex] = {
+            ...savedRecords[recordIndex],
+            ...patient
+        };
+    } else {
+        savedRecords.push(patient);
+    }
+
+    localStorage.setItem(
+        "unidentifiedEmergencyRecords",
+        JSON.stringify(savedRecords)
+    );
+
+
+    /*
+     * DISPLAY PATIENT INFORMATION
+     */
+
+    document.getElementById(
+        "emergencyPatientId"
+    ).textContent = emergencyId;
+
+
+    document.getElementById(
+        "patientName"
+    ).textContent =
+        patient.temporaryName || "Unknown Patient";
+
+
+    document.getElementById(
+        "patientSex"
+    ).textContent =
+        patient.sex || "Unknown";
+
+
+    document.getElementById(
+        "patientAge"
+    ).textContent =
+        patient.estimatedAge
+        ? patient.estimatedAge + " years"
+        : "Unknown";
+
+
+    document.getElementById(
+        "arrivalDate"
+    ).textContent =
+        patient.arrivalDate || "—";
+
+
+    document.getElementById(
+        "arrivalTime"
+    ).textContent =
+        patient.arrivalTime || "—";
+
+
+    document.getElementById(
+        "arrivalMode"
+    ).textContent =
+        patient.arrivalMode || "—";
+
+
+    document.getElementById(
+        "identificationStatus"
+    ).textContent =
+        patient.identificationStatus || "Unidentified";
+
+
+    document.getElementById(
+        "triageCategory"
+    ).textContent =
+        patient.triageCategory || "Not specified";
+
+
+    /*
+     * VITAL SIGNS
+     */
+
+    document.getElementById(
+        "bloodPressure"
+    ).textContent =
+        patient.bloodPressure || "Not recorded";
+
+
+    document.getElementById(
+        "pulse"
+    ).textContent =
+        patient.pulse
+        ? patient.pulse + " bpm"
+        : "Not recorded";
+
+
+    document.getElementById(
+        "respiratoryRate"
+    ).textContent =
+        patient.respiratoryRate
+        ? patient.respiratoryRate + " /min"
+        : "Not recorded";
+
+
+    document.getElementById(
+        "temperature"
+    ).textContent =
+        patient.temperature
+        ? patient.temperature + " °C"
+        : "Not recorded";
+
+
+    document.getElementById(
+        "spo2"
+    ).textContent =
+        patient.spo2
+        ? patient.spo2 + "%"
+        : "Not recorded";
+
+
+    document.getElementById(
+        "painScore"
+    ).textContent =
+        patient.painScore
+        ? patient.painScore + " / 10"
+        : "Not recorded";
+
+
+    /*
+     * ADDITIONAL INFORMATION
+     */
+
+    document.getElementById(
+        "physicalDescription"
+    ).textContent =
+        patient.physicalDescription ||
+        "No description provided.";
+
+
+    document.getElementById(
+        "identificationNotes"
+    ).textContent =
+        patient.identificationNotes ||
+        "No identification notes provided.";
+
+
+    document.getElementById(
+        "otherNotes"
+    ).textContent =
+        patient.otherNotes ||
+        "No additional notes provided.";
+
+
+    document.getElementById(
+        "medicoLegal"
+    ).textContent =
+        patient.medicoLegal
+        ? "Yes"
+        : "No";
+
+
+    /*
+     * NAVIGATION
+     */
+
+    function registerAnotherEmergency() {
+
+        sessionStorage.removeItem(
+            "emergencyPatient"
+        );
+
+        window.location.href =
+            "emergency-unidentified.html";
+
+    }
+
+
+    function goToDashboard() {
+
+        window.location.href =
+            "dashboard.html";
+
+    }
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Dashboard</title>
+    <link rel="stylesheet" href="doctor-dashboard.css">
+</head>
+
+<body>
+
+<div class="dashboard-container">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="sidebar-logo">
+            <h2>EMR</h2>
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <a href="doctor-dashboard.html" class="active">
+                🏠 Dashboard
+            </a>
+
+            <a href="doctor-appointments.html">
+                📅 Appointments
+            </a>
+
+            <div class="sidebar-section">
+                <span class="sidebar-section-title">
+                    Services
+                </span>
+
+                <a href="doctor-laboratory.html">
+                    🧪 Laboratory
+                </a>
+
+                <a href="doctor-radiology.html">
+                    🩻 Radiology
+                </a>
+
+                <a href="doctor-dental.html">
+                    🦷 Dental
+                </a>
+            </div>
+
+            <a href="doctor-patients.html">
+                👤 Patients
+            </a>
+
+            <a href="messages.html">
+                💬 Messages
+            </a>
+
+            <a href="settings.html">
+                ⚙ Settings
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <h3>Doctor Dashboard</h3>
+            </div>
+
+            <div class="user-info">
+                <div class="user-avatar">
+                    DR
+                </div>
+
+                <div>
+                    <strong id="doctorName">Doctor</strong>
+                    <small>Doctor</small>
+                </div>
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <section class="doctor-dashboard">
+
+            <!-- GREETING -->
+            <div class="doctor-welcome">
+
+                <div>
+                    <h1>Good Morning, <span id="doctorGreeting">Doctor</span></h1>
+
+                    <p>
+                        Here's an overview of your clinical activities for today.
+                    </p>
+                </div>
+
+                <div class="doctor-date">
+                    <span>Today</span>
+                    <strong id="currentDate"></strong>
+                </div>
+
+            </div>
+
+
+            <!-- SUMMARY CARDS -->
+            <div class="doctor-summary-cards">
+
+                <div class="doctor-summary-card">
+                    <div class="summary-icon">
+                        📅
+                    </div>
+
+                    <div>
+                        <span>Today's Appointments</span>
+                       <h2 id="todayAppointments">0</h2>
+                    </div>
+                </div>
+
+
+                <div class="doctor-summary-card">
+                    <div class="summary-icon">
+                        👥
+                    </div>
+
+                    <div>
+                        <span>Patients Today</span>
+                        <h2 id="patientsToday">0</h2>
+                    </div>
+                </div>
+
+
+                <div class="doctor-summary-card">
+                    <div class="summary-icon">
+                        🧪
+                    </div>
+
+                    <div>
+                        <span>Pending Laboratory</span>
+                       <h2 id="pendingLaboratory">0</h2>
+                    </div>
+                </div>
+
+
+                <div class="doctor-summary-card">
+                    <div class="summary-icon">
+                        🩻
+                    </div>
+
+                    <div>
+                        <span>Pending Radiology</span>
+                      <h2 id="pendingRadiology">0</h2>
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- DASHBOARD GRID -->
+            <div class="doctor-dashboard-grid">
+
+                <!-- APPOINTMENTS -->
+                <div class="doctor-panel">
+
+                    <div class="doctor-panel-header">
+
+                        <div>
+                            <h2>Today's Appointments</h2>
+                            <p>Your scheduled appointments for today</p>
+                        </div>
+
+                        <a href="doctor-appointments.html">
+                            View All
+                        </a>
+
+                    </div>
+
+
+                    <div class="appointment-list" id="appointmentList">
+
+                    <!-- Appointments will be loaded here -->
+
+                    </div>
+
+                </div>
+
+
+                <!-- SERVICE REQUESTS -->
+                <div class="doctor-panel">
+
+                    <div class="doctor-panel-header">
+
+                        <div>
+                            <h2>Service Requests</h2>
+                            <p>Pending requests requiring attention</p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="service-request-list">
+
+                        <a href="doctor-laboratory.html"
+                           class="service-request">
+
+                            <div class="service-request-icon">
+                                🧪
+                            </div>
+
+                            <div>
+                                <strong>Laboratory</strong>
+                                <span>3 pending requests</span>
+                            </div>
+
+                            <span>→</span>
+
+                        </a>
+
+
+                        <a href="doctor-radiology.html"
+                           class="service-request">
+
+                            <div class="service-request-icon">
+                                🩻
+                            </div>
+
+                            <div>
+                                <strong>Radiology</strong>
+                                <span>2 pending requests</span>
+                            </div>
+
+                            <span>→</span>
+
+                        </a>
+
+
+                        <a href="doctor-dental.html"
+                           class="service-request">
+
+                            <div class="service-request-icon">
+                                🦷
+                            </div>
+
+                            <div>
+                                <strong>Dental</strong>
+                                <span>1 pending request</span>
+                            </div>
+
+                            <span>→</span>
+
+                        </a>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- PATIENTS -->
+            <div class="doctor-panel doctor-patients-panel">
+
+                <div class="doctor-panel-header">
+
+                    <div>
+                        <h2>Recent Patients</h2>
+                        <p>Patients recently seen by you</p>
+                    </div>
+
+                    <a href="doctor-patients.html">
+                        View All
+                    </a>
+
+                </div>
+
+
+                <div class="doctor-patient-table">
+
+                    <div class="patient-table-header">
+                        <span>Patient</span>
+                        <span>UHID</span>
+                        <span>Visit</span>
+                        <span>Status</span>
+                    </div>
+
+
+                    <div class="patient-table-row">
+
+                        <div>
+                            <strong>John Doe</strong>
+                            <small>Male • 35 years</small>
+                        </div>
+
+                        <span>UHID-001245</span>
+
+                        <span>Today</span>
+
+                        <span class="patient-status">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="patient-table-row">
+
+                        <div>
+                            <strong>Mary Smith</strong>
+                            <small>Female • 29 years</small>
+                        </div>
+
+                        <span>UHID-001246</span>
+
+                        <span>Today</span>
+
+                        <span class="patient-status">
+                            Active
+                        </span>
+
+                    </div>
+
+
+                    <div class="patient-table-row">
+
+                        <div>
+                            <strong>David James</strong>
+                            <small>Male • 42 years</small>
+                        </div>
+
+                        <span>UHID-001247</span>
+
+                        <span>Yesterday</span>
+
+                        <span class="patient-status">
+                            Completed
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="doctor-dashboard.js"></script>
+
+
+</body>
+</html>

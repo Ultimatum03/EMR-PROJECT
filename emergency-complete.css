@@ -1,0 +1,485 @@
+/* =========================================================
+   EMERGENCY REGISTRATION COMPLETE
+   ========================================================= */
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: #eef3f8;
+    color: #172b40;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+.sidebar {
+    width: 270px;
+    background: #08294b;
+    color: #ffffff;
+    padding: 25px 18px;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    box-shadow: 4px 0 18px rgba(8, 41, 75, 0.14);
+}
+
+.sidebar-logo {
+    margin-bottom: 30px;
+    padding: 8px 10px 18px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.sidebar-logo h2 {
+    margin: 0;
+    font-size: 30px;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.sidebar-logo p {
+    margin: 6px 0 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 12px;
+    letter-spacing: 0.04em;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar-nav a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #edf3fb;
+    text-decoration: none;
+    padding: 14px 14px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #ffffff;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    background: #f5f7fb;
+}
+
+.topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 18px 30px;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.topbar-left h2 {
+    margin: 0;
+    font-size: 26px;
+    color: #123c69;
+}
+
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+}
+
+.notification {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #f3f6fb;
+    color: #123c69;
+    font-size: 18px;
+}
+
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+}
+
+.user-info strong {
+    color: #123c69;
+    font-size: 15px;
+}
+
+.user-info span {
+    color: #7a8798;
+    font-size: 12px;
+}
+
+.emergency-complete-container {
+    padding: 30px 24px;
+    max-width: 980px;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.summary-top-row {
+    display: flex;
+    align-items: stretch;
+    gap: 18px;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+
+/* SUCCESS MESSAGE */
+
+.registration-success {
+    flex: 1;
+    min-width: 220px;
+    max-width: 420px;
+    text-align: center;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 18px 16px 12px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 5px 16px rgba(15, 23, 42, 0.04);
+}
+
+.success-icon {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #dcfce7;
+    color: #16a34a;
+
+    font-size: 38px;
+    font-weight: 700;
+}
+
+.registration-success h1 {
+    margin: 0 0 10px;
+    color: #1f2937;
+    font-size: 15px;
+}
+
+
+/* EMERGENCY ID */
+
+.emergency-id-card {
+    flex: 1;
+    min-width: 220px;
+    max-width: 420px;
+    background: #fff7f7;
+    border: 1px solid #fecaca;
+
+    border-left: 5px solid #dc2626;
+
+    border-radius: 12px;
+
+    padding: 18px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.id-label {
+    display: block;
+    font-size: 13px;
+    color: #6b7280;
+    margin-bottom: 5px;
+}
+
+.emergency-id-card h2 {
+    margin: 0;
+    color: #b91c1c;
+    font-size: 27px;
+    letter-spacing: 1px;
+}
+
+.id-status {
+    background: #fee2e2;
+    color: #b91c1c;
+
+    padding: 8px 14px;
+
+    border-radius: 20px;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.id-status span {
+    margin-right: 5px;
+}
+
+
+/* COMPLETION CARD */
+
+.completion-card {
+    width: 100%;
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    margin-bottom: 20px;
+
+    overflow: hidden;
+}
+
+.completion-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 20px 24px;
+
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.completion-card-header h3 {
+    margin: 0 0 5px;
+
+    font-size: 17px;
+    color: #1f2937;
+}
+
+.completion-card-header p {
+    margin: 0;
+
+    color: #6b7280;
+    font-size: 13px;
+}
+
+.completion-badge {
+    background: #dcfce7;
+    color: #15803d;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+/* PATIENT SUMMARY */
+
+.patient-summary-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 20px;
+
+    padding: 25px;
+}
+
+.summary-item span,
+.vital-summary-item span,
+.info-block span {
+    display: block;
+
+    color: #6b7280;
+
+    font-size: 12px;
+
+    margin-bottom: 7px;
+}
+
+.summary-item strong {
+    color: #1f2937;
+    font-size: 14px;
+}
+
+
+/* VITALS */
+
+.vitals-summary-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+
+    padding: 25px;
+}
+
+.vital-summary-item {
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 18px;
+}
+
+.vital-summary-item strong {
+    color: #1f2937;
+    font-size: 16px;
+}
+
+
+/* ADDITIONAL INFORMATION */
+
+.additional-info-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 20px;
+
+    padding: 25px;
+}
+
+.info-block {
+    background: #f8fafc;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 10px;
+
+    padding: 18px;
+}
+
+.info-block p {
+    margin: 0;
+
+    color: #374151;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* ACTIONS */
+
+.completion-actions {
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 12px;
+
+    margin-top: 25px;
+
+    padding-bottom: 30px;
+}
+
+
+/* PRINT */
+
+@media print {
+
+    .sidebar,
+    .topbar,
+    .completion-actions {
+        display: none !important;
+    }
+
+    .main-content {
+        margin: 0;
+        width: 100%;
+    }
+
+    .emergency-complete-container {
+        padding: 0;
+        max-width: 100%;
+    }
+
+    .completion-card,
+    .emergency-id-card,
+    .registration-success {
+        box-shadow: none;
+        break-inside: avoid;
+    }
+
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+    .patient-summary-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .vitals-summary-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .emergency-complete-container {
+        padding: 15px;
+    }
+
+    .registration-success {
+        padding: 25px 15px;
+    }
+
+    .registration-success h1 {
+        font-size: 22px;
+    }
+
+    .emergency-id-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .patient-summary-grid,
+    .vitals-summary-grid,
+    .additional-info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .completion-card-header {
+        align-items: flex-start;
+        gap: 10px;
+        flex-direction: column;
+    }
+
+    .completion-actions {
+        flex-direction: column;
+    }
+
+    .completion-actions button {
+        width: 100%;
+    }
+
+}
