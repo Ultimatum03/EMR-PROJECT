@@ -383,7 +383,8 @@ function showPatients() {
 // Sidebar "Patient Records" links to #records on this page.
 function syncRecordsView() {
     const onRecords = location.hash === "#records";
-    if (onRecords) showPatients();
+    // While a KPI card is selected, only that card's list is shown — not the full table.
+    if (onRecords && !activeKpi) showPatients();
     else patientRecords.classList.add("hidden");
     // Active sidebar item is handled by sidebar.js.
 }
@@ -897,6 +898,7 @@ function toggleKpi(key) {
         card.setAttribute("aria-expanded", String(on));
     });
     renderKpiPanel();
+    syncRecordsView(); // an open KPI list replaces the full records table
 }
 
 document.querySelectorAll(".kpi-card").forEach(function(card) {
