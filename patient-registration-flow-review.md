@@ -1,0 +1,153 @@
+# Patient Registration Flow — Alignment Review & Plan
+
+**Files reviewed:** `registration.html`, `registration.css`, `registration.js`
+**Current data layer:** `localStorage` (no backend/database connected yet — by design at this stage)
+
+---
+
+## A. Gap Analysis — Flowchart vs. Current Build
+
+### Target flow (from diagram)
+```
+Dashboard
+  → Click "Register New Patient"
+  → Search for Existing Patient (First Name, Last Name, DOB, Search button)
+  → Query PostgreSQL
+  → FOUND      → show patient details → continue with existing patient
+  → NOT FOUND  → "New Registration" → open full registration form
+```
+
+### What's actually implemented
+
+| Expected step | Status | Detail |
+|---|---|---|
+| Search-for-existing-patient screen (First/Last/DOB + Search) | **Missing** | Does not exist in `registration.html`. |
+| "Register New Patient" opens search first | **Missing** | `registration.html` line 66 calls `showRegistrationForm()` directly — the full intake form opens immediately, with no intermediate step. |
+| Query against PostgreSQL | **Missing** | No backend calls anywhere in `registration.js`. `patientForm`'s submit handler writes directly to `localStorage.getItem("patients")`. |
+| FOUND branch → show patient details → continue with existing record | **Missing** | No such function or UI state exists. |
+| NOT FOUND branch → prompt → open registration form | **Missing** | There's no not-found state, because there's no search step to fail. |
+
+### What exists instead (and is easy to confuse with the above)
+
+- **`#searchPatient` input** (`registration.html` line 383, driven by `getFilteredPatients()` in `registration.js`) is a **live filter on the Patient Records table**, shown via `showPatients()`. It filters patients *already loaded into the table*, by ID, first name, last name, or phone.
+- This is a *post-registration browse/filter* feature, not a *pre-registration duplicate-check* feature. It runs after patients exist in the table, not before a new registration is started.
+
+### Practical consequence
+There is currently **no gate preventing duplicate registration** of the same patient. Since "Register New Patient" skips straight to the full form, the same person (same name + DOB) can be submitted multiple times with no check.
+
+### Out-of-scope addition not in the diagram
+An **Emergency Patient flow** exists (`registration.html` lines 74–132: "Identified Emergency" / "Unidentified Emergency" options, wired to `showEmergencyRegistration()` / `showRegistrationForm(true)` in `registration.js`). This isn't represented in the flowchart at all. Needs an explicit scope decision:
+- Fold it into the search-first flow later (emergency + identified patients should probably still be checked against existing records), or
+- Track it as a separate flow/document.
+
+### Confirmed as expected (not a gap)
+No PostgreSQL connection exists yet — everything persists to `localStorage`. This matches the current instruction not to wire up the database yet.
+
+---
+
+## B. Phased Plan
+
+### Phase 1 — Data layer & schema (when DB work starts)
+- Define `patients` table schema in PostgreSQL (first_name, last_name, dob, plus MRN/other identifiers already used in the form: gender, marital_status, phone, email, address, blood_group, genotype, next_of_kin, relationship, next_of_kin_phone, is_emergency, patient_type).
+- Add index on `(last_name, first_name, dob)` for search performance.
+- Write parameterized query functions only — no string-concatenated SQL.
+- Unit tests: exact match, no match, empty/malformed input, SQL-injection-style input.
+
+### Phase 2 — Search API endpoint
+- `POST /api/patients/search` accepting `first_name`, `last_name`, `dob`.
+- Server-side validation (types, length limits) — don't rely on client-side checks alone.
+- Rate limiting (patient search/DOB fields are an enumeration target).
+- Authorization check before running the query.
+- Return minimal identifying fields in the search response; fetch full record only after explicit selection, via a separate authorized call.
+- Tests: valid match, no match (returns empty, not an error that leaks existence), unauthorized request rejected, rate limit enforced.
+
+### Phase 3 — Frontend: search step (new) — ✅ DONE (localStorage)
+- Build the missing "Search for Existing Patient" screen (First Name, Last Name, DOB, Search button) as the **first** step when "Register New Patient" is clicked — replacing the current direct jump to `showRegistrationForm()`.
+- Client-side validation for UX only (not a security control).
+- Loading / error / no-results states.
+- Escape all values before rendering results into the DOM.
+
+### Phase 4 — Branch: record found — ✅ DONE (localStorage; server-side ID check waits for Phase 2)
+- Render a found-patient summary card (name, DOB, ID — confirm exact field set).
+- "Continue with this patient" → loads existing record by ID (never by raw name/DOB in the URL/query string).
+- Test: correct record loads; tampering with the ID to access an unauthorized record is blocked server-side.
+
+### Phase 5 — Branch: no record found — ✅ DONE (localStorage)
+- "New Registration" prompt → opens the existing full registration form (`#registrationForm`), pre-filled with the name/DOB already typed in the search step.
+- Re-validate everything server-side on submit regardless of pre-fill.
+- Test: no-match path renders correctly; pre-fill populates `firstName`/`lastName`/`dateOfBirth`; garbage/empty search doesn't break the branch.
+
+### Phase 6 — Registration form hardening (existing form, once DB is connected)
+- Add server-side duplicate check before insert (re-run the Phase 1 search logic) so records can't slip in via a race or a skipped search step.
+- Tests: successful registration, duplicate detection, validation failure per required field, malformed input rejected.
+
+### Phase 7 — Integration, decisions, and hardening pass
+- Decide and document: exact vs. fuzzy name matching for search (changes Phase 1 query design and Phase 3/4/5 UX copy).
+- Decide: how the Emergency Patient flow (identified path) intersects with the new search-first flow.
+- End-to-end test: Dashboard → Search → both branches → data persists correctly.
+- Security review: auth enforced server-side on every endpoint (not just hidden buttons), all DB access parameterized, no PII in logs, rate limiting and validation enforced server-side.
+- Fix the XSS item below before any real patient data flows through the table (see Section C).
+
+---
+
+## C. Security Note — Stored XSS in Patient Records Table
+
+**Location:** `registration.js`, `displayPatients()`, the `row.innerHTML = ...` block.
+
+**Issue:** Table rows are built with `innerHTML` using raw, unescaped values — `patient.id`, `firstName`, `lastName`, `gender`, `dateOfBirth`, `phone` — taken directly from the registration form fields (`registration.html` lines 173–338), which have no character restrictions beyond `type="text"`/`type="tel"`/`type="email"`.
+
+**Risk:** Any of these fields (most easily First Name, Last Name, or Address-adjacent free text) can contain HTML/script content that gets injected into the DOM verbatim when the Patient Records table renders. This is a stored XSS path — one bad registration persists and fires for every user who later views the Patient Records table.
+
+**Also flagged:** the inline `onclick="viewPatient('${patient.id}')"` string in the same block interpolates `patient.id` into an HTML attribute unescaped. `patient.id` is currently system-generated (`generatePatientID()`, safe by construction), so this isn't exploitable *today*, but it's a second injection point that would become exploitable if `id` generation logic changes.
+
+**Status: FIXED (2026-09-25).** `displayPatients()` now builds rows with `createElement`/`textContent`, and the inline `onclick` was replaced with `addEventListener`. Verified in a browser test: the payload fires in the old code and not in the new. The same bug in `emergency-unidentified.html` was fixed too (see D1).
+
+---
+
+## D. Bug Log
+
+Found while building Phases 3–5 and the follow-up UI work. **Status** is as of 2026-09-25.
+
+### D1. Fixed
+
+| # | File | Bug | Fix |
+|---|---|---|---|
+| F1 | `registration.js` → `displayPatients()` | Stored XSS in Patient Records table (Section C). | Rows built with `textContent`; no inline `onclick`. |
+| F2 | `emergency-unidentified.html` → `renderUnidentifiedRecords()` (~line 641) | Stored XSS: `temporaryName`, `sex`, `estimatedAge`, `arrivalDate`, `triageCategory` put into `innerHTML` without escaping. | Static table shell + rows built with `textContent`. |
+| F3 | `registration.html` Patient Records table | Header had 6 `<th>` but rows had 7 `<td>` (no header for the View column). | Fixed during the table redesign: 7th column is now "Details". |
+| F4 | `registration.html` Identified Emergency | Opened the registration form on top of the still-open emergency modal; closing the form left the emergency modal behind. | `showPatientSearch(true)` closes the emergency modal first. |
+| F5 | `registration.js` → `showRegistrationForm()` | Hid the Patient Records table when opening the form, leaving the sidebar showing "Patient Records" with no table. | Line removed; the form is a modal and doesn't need to hide the table. |
+| F6 | `registration.js` → `loadPatients()` | Corrupt `patients` data in localStorage threw an uncaught error. Now that records open from a URL (`#records`), this would break on page load. | Reads through `getStoredPatients()`; shows "Could not read patient records." |
+
+### D2. Open — must fix
+
+| # | Severity | File | Bug | Impact |
+|---|---|---|---|---|
+| O1 | High | `dashboard.html` line 201–206 | Loads `auth.js`, which is not in the project. `EMR_AUTH.requireAccess(...)` throws `ReferenceError`. | Dashboard script fails on load; no access check actually runs. |
+| O2 | High | `emergency-complete.html` ~line 438 | Script sets `textContent` on `#bloodPressure`, `#pulse`, etc. — those elements don't exist in the page. | Script throws and **everything after the vital-signs section never runs**. |
+| O3 | Medium | `doctor-dashboard.html` line 356 | Loads `doctor-dashboard.js`, which is not in the project. | Doctor dashboard has no working script. |
+| O4 | Medium | `dashboard.html` sidebar | Links to `appointments.html`; the file is `appointment.html`. | Broken link (404). |
+| O5 | Medium | `registration.js` → `generatePatientID()` | Random 6-digit ID, never checked against existing IDs. | Two patients can share an ID; lookups by ID then return the wrong person. |
+| O6 | Medium | `registration.js` submit handler | No duplicate check on submit — only the search screen gates it (planned: Phase 6, server-side). | Duplicates still possible if the search step is bypassed. |
+| O7 | Medium | `appointment.html` | Booking form has no script; nothing is saved. | Appointments KPI is a fixed `0` placeholder ("Booking not connected yet"). |
+| O8 | Low | `registration.js` submit handler | Still uses raw `JSON.parse`; on corrupt data it throws with no message to the user (data is not overwritten). | Silent failure on registration. |
+| O9 | Low | `emergency-unidentified.html` line ~745 | `renderUnidentifiedRecords("unidentifiedRecordsList")` targets an element that doesn't exist. | Dead call on every load (harmless; returns early). |
+| O10 | Low | `appointment.html`, `dashboard.js` | Branding mismatch: "Nobless EMR" / `noblessAdminSession` vs "PHIFET EMR" elsewhere. | Cosmetic / naming confusion. |
+
+### D3. Known limitations (by design for now)
+
+| # | Item | Notes |
+|---|---|---|
+| L1 | Patient data is stored unencrypted in browser `localStorage`. | Fine for development. **Must not hold real patient data.** Any script on the same origin can read or change it. |
+| L2 | No server-side checks (Phase 4 "ID tampering blocked server-side"). | Can't exist until the Phase 2 API. |
+| L3 | KPIs rely on `registeredAt`, added 2026-09-25. | Records saved before that have no date and are not counted in "Registered Today" / "Emergency Today". |
+| L4 | "Emergency Today" counts identified emergency registrations only. | Unidentified emergencies live in a separate store (`unidentifiedEmergencyRecords`) and are not counted. |
+| L5 | KPIs are computed on page load and after a registration on this page. | Changes made in another tab show after a refresh. |
+
+### D4. Open decisions (Phase 7)
+
+| # | Decision |
+|---|---|
+| Q1 | Existing patient arriving as an emergency: "Continue" only shows the record — nothing records the emergency visit. Likely needs a visit/encounter record separate from the patient record. |
+| Q2 | Same name + DOB, different person: the found screen has no "not this person — register new" option. |
+| Q3 | Exact vs fuzzy name matching (currently exact, case-insensitive, trimmed). |
