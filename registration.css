@@ -470,13 +470,96 @@ th {
 .detail-list {
     display: grid;
     grid-template-columns: max-content 1fr;
-    gap: 10px 24px;
-    font-size: 14px;
+    gap: 8px 16px;
+    font-size: 13px;
 }
 
 .detail-list dt {
     font-weight: 600;
     color: #374151;
+}
+
+.detail-list dd {
+    overflow-wrap: anywhere;
+}
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px 28px;
+}
+
+.detail-grid h4 {
+    font-size: 13px;
+    color: #123c69;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+
+/* KPI CARDS */
+
+.kpi-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.kpi-card {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border-left: 4px solid #123c69;
+}
+
+.kpi-card p {
+    font-size: 13px;
+    color: #6b7280;
+}
+
+.kpi-card h2 {
+    font-size: 28px;
+    margin: 6px 0;
+}
+
+.kpi-card span {
+    font-size: 12px;
+    color: #9ca3af;
+}
+
+.kpi-card.kpi-emergency {
+    border-left-color: #c62828;
+}
+
+
+/* EXPANDABLE PATIENT ROWS */
+
+.expandable-row {
+    cursor: pointer;
+}
+
+.expandable-row:hover,
+.expandable-row.expanded {
+    background: #f8fafc;
+}
+
+.expand-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.detail-row td {
+    background: #f8fafc;
+    padding: 20px;
+}
+
+@media (max-width: 650px) {
+    .kpi-cards {
+        grid-template-columns: 1fr;
+    }
 }
 
 
@@ -746,4 +829,4 @@ th {
     .emergency-option {
         min-height: 125px;
     }
-}
+}

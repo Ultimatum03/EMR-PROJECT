@@ -65,10 +65,13 @@ function normalise(value) {
     return String(value || "").trim().toLowerCase();
 }
 
-function todayLocal() {
-    const d = new Date();
+function localDateKey(d) {
     return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"),
         String(d.getDate()).padStart(2, "0")].join("-");
+}
+
+function todayLocal() {
+    return localDateKey(new Date());
 }
 
 // UX validation only — the server must re-validate once the API exists (Phase 2).
@@ -173,14 +176,50 @@ function renderNoMatch(criteria) {
 
 // READ-ONLY PATIENT DETAIL
 
-const DETAIL_FIELDS = [
-    ["Patient ID", "id"], ["First Name", "firstName"], ["Last Name", "lastName"],
-    ["Other Name", "otherName"], ["Date of Birth", "dateOfBirth"], ["Gender", "gender"],
-    ["Marital Status", "maritalStatus"], ["Phone", "phone"], ["Email", "email"],
-    ["Address", "address"], ["Blood Group", "bloodGroup"], ["Genotype", "genotype"],
-    ["Next of Kin", "nextOfKin"], ["Relationship", "relationship"],
-    ["Next of Kin Phone", "nextOfKinPhone"], ["Registration Type", "patientType"]
+// Single field list shared by the detail modal and the expanded table row.
+const DETAIL_GROUPS = [
+    ["Personal", [["Patient ID", "id"], ["First Name", "firstName"], ["Last Name", "lastName"],
+        ["Other Name", "otherName"], ["Date of Birth", "dateOfBirth"], ["Gender", "gender"],
+        ["Marital Status", "maritalStatus"]]],
+    ["Medical", [["Blood Group", "bloodGroup"], ["Genotype", "genotype"]]],
+    ["Contact", [["Phone", "phone"], ["Email", "email"], ["Address", "address"]]],
+    ["Next of Kin", [["Name", "nextOfKin"], ["Relationship", "relationship"],
+        ["Phone", "nextOfKinPhone"]]],
+    ["Registration", [["Type", "patientType"], ["Registered", "registeredAt"]]]
 ];
+
+function fieldValue(patient, key) {
+    const value = patient[key];
+    if (key === "registeredAt" && value) {
+        const d = new Date(value);
+        return isNaN(d) ? "—" : d.toLocaleString();
+    }
+    return value || "—";
+}
+
+// textContent only — stored values are never parsed as HTML.
+function renderDetailGroups(patient, container) {
+    container.replaceChildren();
+    const grid = document.createElement("div");
+    grid.className = "detail-grid";
+    DETAIL_GROUPS.forEach(function(group) {
+        const section = document.createElement("section");
+        const heading = document.createElement("h4");
+        heading.textContent = group[0];
+        const dl = document.createElement("dl");
+        dl.className = "detail-list";
+        group[1].forEach(function(field) {
+            const dt = document.createElement("dt");
+            dt.textContent = field[0];
+            const dd = document.createElement("dd");
+            dd.textContent = fieldValue(patient, field[1]);
+            dl.append(dt, dd);
+        });
+        section.append(heading, dl);
+        grid.appendChild(section);
+    });
+    container.appendChild(grid);
+}
 
 function showPatientDetail(patientID) {
     let patient;
@@ -195,14 +234,7 @@ function showPatientDetail(patientID) {
         return;
     }
 
-    patientDetailList.replaceChildren();
-    DETAIL_FIELDS.forEach(function(field) {
-        const dt = document.createElement("dt");
-        dt.textContent = field[0];
-        const dd = document.createElement("dd");
-        dd.textContent = patient[field[1]] || "—";
-        patientDetailList.append(dt, dd);
-    });
+    renderDetailGroups(patient, patientDetailList);
 
     patientDetail.classList.remove("hidden");
     document.body.classList.add("modal-open");
@@ -233,8 +265,6 @@ function showRegistrationForm(isEmergency = false) {
     }
 
     registrationForm.classList.remove("hidden");
-
-    patientRecords.classList.add("hidden");
 
     document.body.classList.add("modal-open");
 
@@ -297,6 +327,37 @@ function showPatients() {
 
 }
 
+// Sidebar "Patient Records" links to #records on this page.
+function syncRecordsView() {
+    const onRecords = location.hash === "#records";
+    if (onRecords) showPatients();
+    else patientRecords.classList.add("hidden");
+    document.getElementById("recordsNavLink").classList.toggle("active", onRecords);
+    document.getElementById("registrationNavLink").classList.toggle("active", !onRecords);
+}
+
+window.addEventListener("hashchange", syncRecordsView);
+
+
+// KPI CARDS
+
+function updateKpis() {
+    const registered = document.getElementById("kpiRegisteredToday");
+    const emergency = document.getElementById("kpiEmergencyToday");
+    let today;
+    try {
+        const key = todayLocal();
+        today = getStoredPatients().filter(function(p) {
+            return p.registeredAt && localDateKey(new Date(p.registeredAt)) === key;
+        });
+    } catch (err) {
+        registered.textContent = emergency.textContent = "—";
+        return;
+    }
+    registered.textContent = today.length;
+    emergency.textContent = today.filter(function(p) { return p.patientType === "Emergency"; }).length;
+}
+
 
 // REGISTER PATIENT
 
@@ -355,7 +416,10 @@ patientForm.addEventListener("submit", function(event) {
             isEmergencyRegistration,
 
         patientType:
-            isEmergencyRegistration ? "Emergency" : "Routine"
+            isEmergencyRegistration ? "Emergency" : "Routine",
+
+        registeredAt:
+            new Date().toISOString()
 
     };
 
@@ -384,6 +448,9 @@ patientForm.addEventListener("submit", function(event) {
     registrationTitle.textContent = "New Patient Registration";
     registrationSubtitle.textContent = "Enter the patient's information below";
     patientForm.reset();
+
+    updateKpis();
+    if (!patientRecords.classList.contains("hidden")) loadPatients();
 
 });
 
@@ -451,19 +518,25 @@ function getFilteredPatients(patients) {
 
 function loadPatients() {
 
-    const patients =
-        JSON.parse(localStorage.getItem("patients")) || [];
+    let patients;
+    try {
+        patients = getStoredPatients();
+    } catch (err) {
+        const cell = document.createElement("td");
+        cell.colSpan = 7;
+        cell.className = "empty-state";
+        cell.textContent = "Could not read patient records.";
+        const row = document.createElement("tr");
+        row.appendChild(cell);
+        patientTableBody.replaceChildren(row);
+        return;
+    }
 
-    displayPatients(getFilteredPatients(patients));
+    const filtered = getFilteredPatients(patients);
+    const hasQuery = document.getElementById("searchPatient").value.trim() !== "";
 
-}
-
-
-// VIEW PATIENT
-
-function viewPatient(patientID) {
-
-    showPatientDetail(patientID);
+    // A search that narrows to exactly one record opens it expanded.
+    displayPatients(filtered, hasQuery && filtered.length === 1);
 
 }
 
@@ -487,7 +560,7 @@ if (statusFilter) {
 
 // DISPLAY PATIENTS
 
-function displayPatients(patients) {
+function displayPatients(patients, expandFirst = false) {
 
     patientTableBody.innerHTML = "";
 
@@ -508,7 +581,7 @@ function displayPatients(patients) {
 
 
     // Built with textContent — stored values are never parsed as HTML.
-    patients.forEach(function(patient) {
+    patients.forEach(function(patient, index) {
 
         const row = document.createElement("tr");
 
@@ -528,19 +601,46 @@ function displayPatients(patients) {
         statusCell.appendChild(badge);
         row.appendChild(statusCell);
 
+        const detailId = "detail-" + index;
+
         const actionCell = document.createElement("td");
-        const viewBtn = document.createElement("button");
-        viewBtn.type = "button";
-        viewBtn.className = "secondary-btn";
-        viewBtn.textContent = "View";
-        viewBtn.addEventListener("click", function() {
-            viewPatient(patient.id);
-        });
-        actionCell.appendChild(viewBtn);
+        const toggleBtn = document.createElement("button");
+        toggleBtn.type = "button";
+        toggleBtn.className = "secondary-btn expand-btn";
+        toggleBtn.setAttribute("aria-controls", detailId);
+        actionCell.appendChild(toggleBtn);
         row.appendChild(actionCell);
 
-        patientTableBody.appendChild(row);
+        const detailRow = document.createElement("tr");
+        detailRow.id = detailId;
+        detailRow.className = "detail-row";
+        const detailCell = document.createElement("td");
+        detailCell.colSpan = 7;
+        renderDetailGroups(patient, detailCell);
+        detailRow.appendChild(detailCell);
+
+        function setExpanded(open) {
+            detailRow.classList.toggle("hidden", !open);
+            row.classList.toggle("expanded", open);
+            toggleBtn.setAttribute("aria-expanded", String(open));
+            toggleBtn.textContent = open ? "Hide" : "Details";
+        }
+        setExpanded(expandFirst && index === 0);
+
+        // Button click bubbles here, so the whole row (and the button) toggles once.
+        row.classList.add("expandable-row");
+        row.addEventListener("click", function() {
+            setExpanded(detailRow.classList.contains("hidden"));
+        });
+
+        patientTableBody.append(row, detailRow);
 
     });
 
 }
+
+
+// INITIAL STATE
+
+syncRecordsView();
+updateKpis();

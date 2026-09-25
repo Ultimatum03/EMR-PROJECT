@@ -29,9 +29,14 @@
                 Dashboard
             </a>
 
-            <a href="registration.html" class="active">
+            <a href="registration.html" id="registrationNavLink" class="active">
                 <i class="fa-solid fa-notes-medical"></i>
                 Registration
+            </a>
+
+            <a href="#records" id="recordsNavLink">
+                <i class="fa-solid fa-folder-open"></i>
+                Patient Records
             </a>
         </nav>
 
@@ -60,15 +65,30 @@
         <!-- PAGE CONTENT -->
         <section class="registration-container">
 
+            <!-- KPI CARDS -->
+            <div class="kpi-cards">
+                <div class="kpi-card">
+                    <p>Registered Today</p>
+                    <h2 id="kpiRegisteredToday">0</h2>
+                    <span>New registrations today</span>
+                </div>
+                <div class="kpi-card">
+                    <p>Appointments</p>
+                    <h2 id="kpiAppointments">0</h2>
+                    <span>Booking not connected yet</span>
+                </div>
+                <div class="kpi-card kpi-emergency">
+                    <p>Emergency Today</p>
+                    <h2 id="kpiEmergencyToday">0</h2>
+                    <span>Identified emergency registrations</span>
+                </div>
+            </div>
+
             <!-- PAGE ACTIONS -->
             <div class="page-actions">
 
                 <button class="primary-btn" onclick="showPatientSearch()">
                     + Register New Patient
-                </button>
-
-                <button class="secondary-btn" onclick="showPatients()">
-                    Patient Records
                 </button>
 
                 <button class="emergency-btn" onclick="showEmergencyRegistration()">
@@ -183,7 +203,7 @@
                         <button type="button" class="close-modal-btn" aria-label="Close patient details"
                             onclick="closePatientDetail()">&times;</button>
                     </div>
-                    <dl id="patientDetailList" class="detail-list"></dl>
+                    <div id="patientDetailList"></div>
                 </div>
             </div>
 
@@ -462,6 +482,7 @@
                                 <th>Date of Birth</th>
                                 <th>Phone</th>
                                 <th>Status</th>
+                                <th>Details</th>
                             </tr>
                         </thead>
 
@@ -489,4 +510,4 @@
     <script src="registration.js"></script>
 
 </body>
-</html>
+</html>
