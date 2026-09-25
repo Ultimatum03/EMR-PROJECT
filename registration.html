@@ -33,11 +33,6 @@
                 <i class="fa-solid fa-notes-medical"></i>
                 Registration
             </a>
-
-            <a href="patient-records">
-                <i class="fa-solid fa-folder-open"></i>
-                Patient Records
-            </a>
         </nav>
 
     </aside>
@@ -68,8 +63,12 @@
             <!-- PAGE ACTIONS -->
             <div class="page-actions">
 
-                <button class="primary-btn" onclick="showRegistrationForm()">
+                <button class="primary-btn" onclick="showPatientSearch()">
                     + Register New Patient
+                </button>
+
+                <button class="secondary-btn" onclick="showPatients()">
+                    Patient Records
                 </button>
 
                 <button class="emergency-btn" onclick="showEmergencyRegistration()">
@@ -105,7 +104,7 @@
 
                     <div class="emergency-selection">
                         <button type="button" class="emergency-option identified-option"
-                            onclick="showRegistrationForm(true)"
+                            onclick="showPatientSearch(true)"
                         >
                             <span class="option-icon"><i class="fa-solid fa-user"></i></span>
                             <span class="option-content">
@@ -129,6 +128,62 @@
                         </button>
 
                     </div>
+                </div>
+            </div>
+
+
+            <!-- SEARCH FOR EXISTING PATIENT (step 1 of registration) -->
+            <div id="patientSearch" class="registration-modal hidden" role="dialog" aria-modal="true"
+                aria-labelledby="patientSearchTitle" onclick="handleSearchBackdropClick(event)">
+                <div class="card registration-modal-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 id="patientSearchTitle">Search for Existing Patient</h2>
+                            <p id="patientSearchSubtitle">Check whether the patient is already registered.</p>
+                        </div>
+                        <button type="button" class="close-modal-btn" aria-label="Close patient search"
+                            onclick="closePatientSearch()">&times;</button>
+                    </div>
+
+                    <form id="searchForm" novalidate>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="searchFirstName">First Name</label>
+                                <input type="text" id="searchFirstName" maxlength="100" autocomplete="off" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="searchLastName">Last Name</label>
+                                <input type="text" id="searchLastName" maxlength="100" autocomplete="off" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="searchDob">Date of Birth</label>
+                                <input type="date" id="searchDob" required>
+                            </div>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="primary-btn">Search</button>
+                        </div>
+                    </form>
+
+                    <p id="searchStatus" class="search-status" role="status" aria-live="polite"></p>
+                    <div id="searchResults"></div>
+                </div>
+            </div>
+
+
+            <!-- PATIENT DETAIL (read-only) -->
+            <div id="patientDetail" class="registration-modal hidden" role="dialog" aria-modal="true"
+                aria-labelledby="patientDetailTitle" onclick="handleDetailBackdropClick(event)">
+                <div class="card registration-modal-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 id="patientDetailTitle">Patient Details</h2>
+                            <p>Existing patient record</p>
+                        </div>
+                        <button type="button" class="close-modal-btn" aria-label="Close patient details"
+                            onclick="closePatientDetail()">&times;</button>
+                    </div>
+                    <dl id="patientDetailList" class="detail-list"></dl>
                 </div>
             </div>
 

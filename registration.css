@@ -432,6 +432,54 @@ th {
 }
 
 
+/* PATIENT SEARCH & DETAIL */
+
+.search-status {
+    margin-top: 20px;
+    font-size: 14px;
+    color: #374151;
+}
+
+.search-status.error {
+    color: #b91c1c;
+}
+
+.match-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-top: 12px;
+    padding: 16px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.match-card span {
+    display: block;
+    color: #6b7280;
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.no-match-actions {
+    margin-top: 12px;
+}
+
+.detail-list {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: 10px 24px;
+    font-size: 14px;
+}
+
+.detail-list dt {
+    font-weight: 600;
+    color: #374151;
+}
+
+
 /* HIDDEN */
 
 .hidden {
