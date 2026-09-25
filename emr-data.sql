@@ -16,7 +16,7 @@ CREATE TABLE patients (
     next_of_kin VARCHAR(100) NOT NULL,
     next_of_kin_phone VARCHAR(20) NOT NULL,
     next_of_kin_relationship VARCHAR(50) NOT NULL,
-    next_of_kin_address TEXT NOT NULL
+    next_of_kin_address TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
