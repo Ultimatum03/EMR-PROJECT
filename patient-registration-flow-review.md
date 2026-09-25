@@ -120,12 +120,17 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | F6 | `registration.js` → `loadPatients()` | Corrupt `patients` data in localStorage threw an uncaught error. Now that records open from a URL (`#records`), this would break on page load. | Reads through `getStoredPatients()`; shows "Could not read patient records." |
 | F7 | `dashboard.html` sidebar (was O4) | Linked to `appointments.html`; file is `appointment.html`. | Sidebar config links `appointment.html`. |
 | F8 | `registration.js` submit (was O8) | Raw `JSON.parse`; silent failure on corrupt data. | Guarded read with a message; a full-storage error keeps the form open so nothing typed is lost. |
+| F10 | `dashboard.html` (was O1) | Loaded `auth.js`, which didn't exist → `ReferenceError`, no access check. | `auth.js` implemented; every app page checks the session in `<head>` before rendering. |
+| F11 | `login page.html` | Login button was a link to `dashboard.html` inside the submit button — any input (or none) got in. | Real login via `EMR_AUTH.login`; errors shown; "Remember me" wired. |
+| F12 | `dashboard.html` | Loaded a placeholder avatar from `i.pravatar.cc` — a third-party request that leaked every viewer's IP. | Removed; shared top bar shows initials. |
+| F13 | `auth.js` (found by tests before release) | Lockout counter reset on every failure, so the 5-attempt lockout never triggered. | Counter only resets after an expired lock. |
+| F14 | `emergency-unidentified.html` arrival date | Used `toISOString()` (UTC) → between 00:00–01:00 Lagos time the form defaulted to yesterday. | The pop-up version uses the local date. |
+| F15 | `registration.css` | Text areas (Address, Physical Description) rendered in a monospace font. | `font-family: inherit` on form controls. |
 
 ### D2. Open — must fix
 
 | # | Severity | File | Bug | Impact |
 |---|---|---|---|---|
-| O1 | High | `dashboard.html` line 201–206 | Loads `auth.js`, which is not in the project. `EMR_AUTH.requireAccess(...)` throws `ReferenceError`. | Dashboard script fails on load; no access check actually runs. |
 | O2 | High | `emergency-complete.html` ~line 438 | Script sets `textContent` on `#bloodPressure`, `#pulse`, etc. — those elements don't exist in the page. | Script throws and **everything after the vital-signs section never runs**. |
 | O3 | Medium | `doctor-dashboard.html` line 356 | Loads `doctor-dashboard.js`, which is not in the project. | Doctor dashboard has no working script. |
 | O5 | Medium | `registration.js` → `generatePatientID()` | Random 6-digit ID, never checked against existing IDs. | Two patients can share an ID; lookups by ID then return the wrong person. |
@@ -140,6 +145,9 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | O15 | Medium | `emergency-complete.html` ~line 285 | When no patient is in sessionStorage it sets `location.href` to redirect but keeps running, then throws reading `emergencyId` of `null`. | Error on every direct visit; needs a `return` after the redirect. |
 | O16 | Low | `dashboard.html` sidebar | "Settings" links to `setting.html` (missing); Services / Wards sub-items link to `#`. | Dead links (kept as they were). |
 | O17 | Low | `dashboard.css`, `appointment.css`, `emergency-unidentified.css`, `emergency-complete.css` | Old `.sidebar` / `.logo` rules are now unused (removed from `registration.css` only). | Dead CSS — clean up when those files are next touched. |
+| O18 | Medium | Unidentified emergency records | The "View Unidentified Emergency Records" list only exists on `emergency-unidentified.html`, which is no longer linked. Records are still saved, but there's no way to browse them from the app. | Needs a decision: add them to Patient Records / the Emergency queue, or a KPI list. |
+| O19 | Low | `forgot password.html` | Form does nothing (no backend); `<style>` block sits after `</html>` (invalid HTML). | Dead end for users who forget a password — for now, reset by clearing `emrUsers` in the browser. |
+| O20 | Low | `emergency-complete.html` "Register another emergency" | Now returns to Registration; it can't open the Unidentified pop-up directly. | One extra click. |
 
 ### D3. Known limitations (by design for now)
 
@@ -151,6 +159,10 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | L4 | "Emergency Today" counts identified emergency registrations only. | Unidentified emergencies live in a separate store (`unidentifiedEmergencyRecords`) and are not counted. |
 | L5 | KPIs and records update live across tabs in the same browser (storage event). | Other computers see changes only after the backend exists. |
 | L6 | Patient photos are stored in localStorage (~20–30 KB each after resizing). | Browser storage is ~5 MB total → roughly 150–200 patients with photos. Must move to server storage. Save errors on a full store are caught and reported. |
+| L8 | Auth is a client-side prototype: users, hashes and a mock (unsigned) JWT live in this browser's storage. It is **not a security boundary** — anyone at the computer can edit storage. Passwords are salted PBKDF2-SHA256 (100k iterations); 5 failed logins lock the username for 5 minutes. | Backend must issue/verify signed tokens (never accept `alg: none`), ideally as an httpOnly cookie, and enforce lockout server-side. |
+| L9 | Roles: all four default users are "Staff" (no role model yet). | Needed before any role-based access. |
+| L10 | Dark mode is complete on Registration and Queue; Dashboard / Appointment / Emergency Record get the main surfaces only; Login / Forgot Password stay light. | Convert those stylesheets to theme tokens when next touched. |
+| L11 | Notification bell has no data source (no unread dot shown). | Wire to real notifications later. |
 | L7 | "Live" queue = same browser only (storage event + 30 s refresh). | Multi-workstation queues need the backend (websocket or polling). |
 
 ### D4. Open decisions (Phase 7)
@@ -198,3 +210,18 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | R5 | One open visit per patient per clinic per day. |
 | R6 | Only today's appointments can be checked in. |
 | R7 | Walk-in / transfer visits start as "checked-in" (patient is present). |
+
+
+---
+
+## F. Auth, Theme, Top Bar & Queue Redesign (2026-09-25)
+
+| Item | Where |
+|---|---|
+| Login (favour, praise, feranmi, heritage — temporary password `password`), forced password change on first login, profile menu (Change password, Logout), sidebar Logout, cross-tab logout, 8-hour sessions, lockout | `auth.js`, `login page.html`, `topbar.js` |
+| Light/dark theme toggle in the top bar, remembered per browser | `theme.js`, `theme.css`, `topbar.js` |
+| Shared top bar (theme, bell, profile, date/time) | `topbar.js`, `topbar.css` — dashboard, registration, queue, appointment, emergency record |
+| Queue redesigned to the approved mock: clinic cards, search + Status / Visit Type / Time Range filters (applied on Filter), numbered table, Initial Consultation / Follow-up, View + ⋮ status actions, pagination (10/page) | `queue.html`, `queue.js`, `queue.css` |
+| Patient Records: title "Patient Records", KPI cards hidden, loading skeleton + empty states | `registration.*`, `emr-data.js` (`fetchPatients`) |
+| Unidentified Emergency form now a pop-up on Registration; removed from all sidebars | `registration.html` / `.js` |
+| Icon-only New Patient / Emergency (top bar) and Book / Send (KPI lists), all with labels + tooltips | `registration.*` |

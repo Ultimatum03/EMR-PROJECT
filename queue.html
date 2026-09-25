@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Queue | EMR</title>
 
+    <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="registration.css">
     <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="topbar.css">
     <link rel="stylesheet" href="queue.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <script src="theme.js"></script>
+    <script src="auth.js"></script>
+    <script>EMR_AUTH.requireAccess();</script>
 </head>
 
 <body>
@@ -17,37 +23,82 @@
 
     <main class="main-content app-main">
 
-        <header class="topbar">
-            <div>
+        <header id="appTopbar"></header>
+
+        <section class="queue-page">
+
+            <div class="page-heading">
                 <h1>Patient Queue</h1>
                 <p>Today's live queue by clinic</p>
             </div>
-            <div class="user-area">
-                <span id="queueClock"></span>
-            </div>
-        </header>
 
-        <section class="registration-container">
+            <div id="clinicTabs" class="clinic-cards" role="tablist" aria-label="Clinics"></div>
 
-            <div id="clinicTabs" class="clinic-tabs" role="tablist" aria-label="Clinics"></div>
+            <div class="queue-card">
 
-            <div class="card">
-                <div class="card-header">
-                    <div>
+                <div class="queue-card-head">
+                    <span class="queue-clinic-icon" id="queueClinicIcon"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
+                    <div class="queue-card-title">
                         <h2 id="queueTitle">Clinic</h2>
                         <p id="queueSummary"></p>
                     </div>
-                    <span class="live-indicator"><i class="fa-solid fa-circle"></i> Live</span>
+                    <div class="queue-card-tools">
+                        <span class="live-indicator"><span class="live-dot"></span> Live</span>
+                        <span class="tools-divider"></span>
+                        <button type="button" class="refresh-btn" id="refreshBtn" aria-label="Refresh queue" title="Refresh">
+                            <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                        </button>
+                    </div>
                 </div>
+
+                <form class="queue-filters" id="queueFilters">
+                    <label class="queue-search">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        <input type="search" id="queueSearch" placeholder="Search patient (name, PID, phone...)" aria-label="Search patient">
+                    </label>
+                    <label class="queue-select">
+                        <span>Status</span>
+                        <select id="statusFilterQ">
+                            <option value="">All</option>
+                            <option value="scheduled">Scheduled</option>
+                            <option value="checked-in">Waiting</option>
+                            <option value="in-consultation">With Doctor</option>
+                            <option value="done">Done</option>
+                        </select>
+                    </label>
+                    <label class="queue-select">
+                        <span>Visit Type</span>
+                        <select id="typeFilterQ">
+                            <option value="">All</option>
+                            <option value="appointment">Appointment</option>
+                            <option value="walk-in">Walk-in</option>
+                            <option value="emergency">Emergency</option>
+                        </select>
+                    </label>
+                    <label class="queue-select">
+                        <span>Time Range</span>
+                        <select id="timeFilterQ">
+                            <option value="today">Today</option>
+                            <option value="morning">Morning (before 12:00)</option>
+                            <option value="afternoon">Afternoon (12:00–16:59)</option>
+                            <option value="evening">Evening (17:00+)</option>
+                        </select>
+                    </label>
+                    <button type="submit" class="filter-btn">
+                        <i class="fa-solid fa-filter" aria-hidden="true"></i> Filter
+                    </button>
+                </form>
 
                 <p id="queueError" class="search-status error" role="alert"></p>
 
-                <div class="table-container">
-                    <table>
+                <div class="queue-table-wrap">
+                    <table class="queue-table">
                         <thead>
                             <tr>
+                                <th>#</th>
                                 <th>Time</th>
                                 <th>Patient</th>
+                                <th>PID</th>
                                 <th>Type</th>
                                 <th>Visit</th>
                                 <th>Status</th>
@@ -57,14 +108,34 @@
                         <tbody id="queueBody"></tbody>
                     </table>
                 </div>
+
+                <div class="queue-footer">
+                    <span id="queueCount"></span>
+                    <nav class="pager" id="queuePager" aria-label="Queue pages"></nav>
+                </div>
             </div>
 
         </section>
+
+        <!-- VIEW PATIENT -->
+        <div id="queueDetail" class="registration-modal hidden" role="dialog" aria-modal="true" aria-labelledby="queueDetailTitle">
+            <div class="card registration-modal-card">
+                <div class="card-header">
+                    <div>
+                        <h2 id="queueDetailTitle">Patient Details</h2>
+                        <p id="queueDetailSub"></p>
+                    </div>
+                    <button type="button" class="close-modal-btn" id="queueDetailClose" aria-label="Close patient details">&times;</button>
+                </div>
+                <div id="queueDetailBody"></div>
+            </div>
+        </div>
 
     </main>
 
     <script src="emr-data.js"></script>
     <script src="sidebar.js"></script>
+    <script src="topbar.js"></script>
     <script src="queue.js"></script>
 
 </body>

@@ -179,26 +179,8 @@ function renderNoMatch(criteria) {
 
 // READ-ONLY PATIENT DETAIL
 
-// Single field list shared by the detail modal and the expanded table row.
-const DETAIL_GROUPS = [
-    ["Personal", [["Patient ID", "id"], ["First Name", "firstName"], ["Last Name", "lastName"],
-        ["Other Name", "otherName"], ["Date of Birth", "dateOfBirth"], ["Gender", "gender"],
-        ["Marital Status", "maritalStatus"]]],
-    ["Medical", [["Blood Group", "bloodGroup"], ["Genotype", "genotype"]]],
-    ["Contact", [["Phone", "phone"], ["Email", "email"], ["Address", "address"]]],
-    ["Next of Kin", [["Name", "nextOfKin"], ["Relationship", "relationship"],
-        ["Phone", "nextOfKinPhone"]]],
-    ["Registration", [["Type", "patientType"], ["Registered", "registeredAt"]]]
-];
-
-function fieldValue(patient, key) {
-    const value = patient[key];
-    if (key === "registeredAt" && value) {
-        const d = new Date(value);
-        return isNaN(d) ? "—" : d.toLocaleString();
-    }
-    return value || "—";
-}
+// Detail renderer is shared with the queue page (emr-data.js).
+const renderDetailGroups = EMR.renderDetailGroups;
 
 // textContent only — stored values are never parsed as HTML.
 const photoElement = EMR.photoElement;
@@ -215,36 +197,24 @@ function actionButton(label, className, onClick) {
     return btn;
 }
 
+// Icon-only variant: accessible name via aria-label, tooltip via title.
+function iconActionButton(label, iconClass, className, onClick) {
+    const btn = actionButton("", className + " icon-action-btn", onClick);
+    btn.setAttribute("aria-label", label);
+    btn.title = label;
+    const i = document.createElement("i");
+    i.className = iconClass;
+    i.setAttribute("aria-hidden", "true");
+    btn.appendChild(i);
+    return btn;
+}
+
 function renderPatientActions(patient, container) {
     container.replaceChildren(
         actionButton("Edit", "secondary-btn", function() { showEditForm(patient.id); }),
         actionButton("Send to Clinic", "primary-btn", function() { openVisitModal(patient.id, "transfer"); }),
         actionButton("Book Appointment", "secondary-btn", function() { openVisitModal(patient.id, "book"); })
     );
-}
-
-function renderDetailGroups(patient, container) {
-    container.replaceChildren();
-    container.appendChild(photoElement(patient, "detail-photo"));
-    const grid = document.createElement("div");
-    grid.className = "detail-grid";
-    DETAIL_GROUPS.forEach(function(group) {
-        const section = document.createElement("section");
-        const heading = document.createElement("h4");
-        heading.textContent = group[0];
-        const dl = document.createElement("dl");
-        dl.className = "detail-list";
-        group[1].forEach(function(field) {
-            const dt = document.createElement("dt");
-            dt.textContent = field[0];
-            const dd = document.createElement("dd");
-            dd.textContent = fieldValue(patient, field[1]);
-            dl.append(dt, dd);
-        });
-        section.append(heading, dl);
-        grid.appendChild(section);
-    });
-    container.appendChild(grid);
 }
 
 function showPatientDetail(patientID) {
@@ -383,8 +353,17 @@ function showPatients() {
 // Sidebar "Patient Records" links to #records on this page.
 function syncRecordsView() {
     const onRecords = location.hash === "#records";
-    // While a KPI card is selected, only that card's list is shown — not the full table.
-    if (onRecords && !activeKpi) showPatients();
+    const title = onRecords ? "Patient Records" : "Patient Registration";
+    document.getElementById("pageTitle").textContent = title;
+    document.getElementById("pageSubtitle").textContent =
+        onRecords ? "Browse and manage registered patients" : "Register and manage hospital patients";
+    document.title = title + " | EMR";
+
+    // KPI cards and their lists belong to the Register view only.
+    document.getElementById("kpiSection").classList.toggle("hidden", onRecords);
+    if (onRecords) setActiveKpi(null);
+
+    if (onRecords) showPatients();
     else patientRecords.classList.add("hidden");
     // Active sidebar item is handled by sidebar.js.
 }
@@ -669,7 +648,9 @@ document.addEventListener("keydown", function(event) {
         return;
     }
 
-    if (!visitModal.classList.contains("hidden")) {
+    if (!unidentifiedModal.classList.contains("hidden")) {
+        closeUnidentifiedForm();
+    } else if (!visitModal.classList.contains("hidden")) {
         closeVisitModal();
     } else if (!patientDetail.classList.contains("hidden")) {
         closePatientDetail();
@@ -726,28 +707,62 @@ function getFilteredPatients(patients) {
 
 }
 
+let loadSeq = 0;
+
 function loadPatients() {
+    const seq = ++loadSeq;
+    showTableSkeleton();
+    EMR.fetchPatients().then(function(patients) {
+        if (seq !== loadSeq) return; // a newer load started (e.g. fast typing) — drop this result
+        patientTableBody.removeAttribute("aria-busy");
+        const filtered = getFilteredPatients(patients);
+        const hasQuery = document.getElementById("searchPatient").value.trim() !== "";
+        // A search that narrows to exactly one record opens it expanded.
+        displayPatients(filtered, hasQuery && filtered.length === 1, patients.length);
+    }, function() {
+        if (seq !== loadSeq) return;
+        patientTableBody.removeAttribute("aria-busy");
+        patientTableBody.replaceChildren(stateRow("fa-solid fa-triangle-exclamation", "Could not read patient records.", ""));
+    });
+}
 
-    let patients;
-    try {
-        patients = getStoredPatients();
-    } catch (err) {
-        const cell = document.createElement("td");
-        cell.colSpan = 7;
-        cell.className = "empty-state";
-        cell.textContent = "Could not read patient records.";
-        const row = document.createElement("tr");
-        row.appendChild(cell);
-        patientTableBody.replaceChildren(row);
-        return;
+// Grey placeholder rows while records load.
+function showTableSkeleton() {
+    patientTableBody.setAttribute("aria-busy", "true");
+    const rows = [];
+    for (let r = 0; r < 5; r++) {
+        const tr = document.createElement("tr");
+        tr.className = "skeleton-row";
+        for (let c = 0; c < 7; c++) {
+            const td = document.createElement("td");
+            const bar = document.createElement("span");
+            bar.className = "skeleton-bar";
+            td.appendChild(bar);
+            tr.appendChild(td);
+        }
+        rows.push(tr);
     }
+    patientTableBody.replaceChildren.apply(patientTableBody, rows);
+}
 
-    const filtered = getFilteredPatients(patients);
-    const hasQuery = document.getElementById("searchPatient").value.trim() !== "";
-
-    // A search that narrows to exactly one record opens it expanded.
-    displayPatients(filtered, hasQuery && filtered.length === 1);
-
+function stateRow(iconClass, title, text) {
+    const td = document.createElement("td");
+    td.colSpan = 7;
+    td.className = "empty-state";
+    const icon = document.createElement("i");
+    icon.className = iconClass + " empty-state-icon";
+    icon.setAttribute("aria-hidden", "true");
+    const strong = document.createElement("strong");
+    strong.textContent = title;
+    td.append(icon, strong);
+    if (text) {
+        const p = document.createElement("span");
+        p.textContent = text;
+        td.appendChild(p);
+    }
+    const tr = document.createElement("tr");
+    tr.appendChild(td);
+    return tr;
 }
 
 
@@ -770,23 +785,16 @@ if (statusFilter) {
 
 // DISPLAY PATIENTS
 
-function displayPatients(patients, expandFirst = false) {
+function displayPatients(patients, expandFirst = false, totalCount = patients.length) {
 
     patientTableBody.innerHTML = "";
 
 
     if (patients.length === 0) {
-
-        patientTableBody.innerHTML = `
-            <tr>
-                <td colspan="7" class="empty-state">
-                    No matching patient found.
-                </td>
-            </tr>
-        `;
-
+        patientTableBody.replaceChildren(totalCount === 0
+            ? stateRow("fa-solid fa-user-plus", "No patients registered yet", "Use the New Patient button at the top right to register the first patient.")
+            : stateRow("fa-solid fa-magnifying-glass", "No matching patients", "Try a different name, patient ID or phone number, or clear the filter."));
         return;
-
     }
 
 
@@ -890,15 +898,18 @@ const KPI_LISTS = {
     appointments: { title: "Appointments Today", subtitle: "Booked appointments for today", sixth: "Appointment", empty: "No appointments booked for today." }
 };
 
-function toggleKpi(key) {
-    activeKpi = activeKpi === key ? null : key;
+function setActiveKpi(key) {
+    activeKpi = key;
     document.querySelectorAll(".kpi-card").forEach(function(card) {
         const on = card.dataset.kpi === activeKpi;
         card.classList.toggle("active", on);
         card.setAttribute("aria-expanded", String(on));
     });
     renderKpiPanel();
-    syncRecordsView(); // an open KPI list replaces the full records table
+}
+
+function toggleKpi(key) {
+    setActiveKpi(activeKpi === key ? null : key);
 }
 
 document.querySelectorAll(".kpi-card").forEach(function(card) {
@@ -959,7 +970,7 @@ function renderKpiPanel() {
 
             const actions = [];
             if (v.status === "scheduled") actions.push(actionButton("Check in", "primary-btn", function() { checkIn(v.id); }));
-            actions.push(actionButton("Book Appointment", "secondary-btn", function() { openVisitModal(patient.id, "book"); }));
+            actions.push(iconActionButton("Book Appointment", "fa-solid fa-calendar-plus", "secondary-btn", function() { openVisitModal(patient.id, "book"); }));
             rows.push(withActions(patientRow(patient, apptCell), actions));
         });
     } else {
@@ -968,8 +979,8 @@ function renderKpiPanel() {
                 (activeKpi !== "emergency" || p.patientType === "Emergency");
         }).forEach(function(patient) {
             rows.push(withActions(patientRow(patient, clinicCell(patient, visits)), [
-                actionButton("Book Appointment", "secondary-btn", function() { openVisitModal(patient.id, "book"); }),
-                actionButton("Send to Clinic", "primary-btn", function() { openVisitModal(patient.id, "transfer"); })
+                iconActionButton("Book Appointment", "fa-solid fa-calendar-plus", "secondary-btn", function() { openVisitModal(patient.id, "book"); }),
+                iconActionButton("Send to Clinic", "fa-solid fa-share-from-square", "primary-btn", function() { openVisitModal(patient.id, "transfer"); })
             ]));
         });
     }
@@ -1036,6 +1047,68 @@ function clinicCell(patient, visits) {
     }
     return td;
 }
+
+
+// UNIDENTIFIED EMERGENCY (was emergency-unidentified.html; saves the same record, then continues
+// to emergency-complete.html exactly as before)
+
+const unidentifiedModal = document.getElementById("unidentifiedModal");
+const unidentifiedForm = document.getElementById("unidentifiedForm");
+
+function showUnidentifiedForm() {
+    closeEmergencyRegistration();
+    unidentifiedForm.reset();
+    document.getElementById("descriptionCount").textContent = "0";
+    document.getElementById("arrivalDate").value = EMR.today();   // local date (the old page used UTC)
+    document.getElementById("arrivalTime").value = EMR.nowTime();
+    unidentifiedModal.classList.remove("hidden");
+    document.body.classList.add("modal-open");
+    document.getElementById("temporaryName").focus();
+}
+
+function closeUnidentifiedForm() {
+    unidentifiedModal.classList.add("hidden");
+    document.body.classList.remove("modal-open");
+}
+
+function handleUnidentifiedBackdropClick(event) {
+    if (event.target === unidentifiedModal) closeUnidentifiedForm();
+}
+
+document.getElementById("physicalDescription").addEventListener("input", function() {
+    document.getElementById("descriptionCount").textContent = this.value.length;
+});
+
+unidentifiedForm.addEventListener("submit", function(event) {
+    event.preventDefault();
+    const value = function(id) { return document.getElementById(id).value; };
+    const record = {
+        temporaryName: value("temporaryName").trim() || "Unknown Patient",
+        sex: value("uSex"),
+        estimatedAge: value("estimatedAge"),
+        arrivalDate: value("arrivalDate"),
+        arrivalTime: value("arrivalTime"),
+        arrivalMode: value("arrivalMode"),
+        broughtBy: value("broughtBy"),
+        identificationStatus: value("identificationStatus"),
+        physicalDescription: value("physicalDescription"),
+        triageCategory: value("triageCategory"),
+        medicoLegal: document.getElementById("medicoLegal").checked,
+        patientType: "Emergency",
+        isEmergency: true
+    };
+    let records;
+    try {
+        records = JSON.parse(localStorage.getItem("unidentifiedEmergencyRecords")) || [];
+        if (!Array.isArray(records)) throw new Error("corrupt");
+        records.push(record);
+        localStorage.setItem("unidentifiedEmergencyRecords", JSON.stringify(records));
+        sessionStorage.setItem("emergencyPatient", JSON.stringify(record));
+    } catch (err) {
+        return alert("Could not save the emergency record (storage unreadable or full). Nothing was saved.");
+    }
+    window.location.href = "emergency-complete.html";
+});
 
 
 // INITIAL STATE

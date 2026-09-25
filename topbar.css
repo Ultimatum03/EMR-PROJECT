@@ -1,0 +1,286 @@
+/* Shared top bar + change-password modal (see topbar.js). Uses theme.css tokens. */
+
+.app-topbar {
+    align-self: stretch;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 16px;
+    min-height: 80px;
+    padding: 0 32px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.topbar-cluster {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+}
+
+.topbar-icon-btn {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--text-strong);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.topbar-icon-btn:hover {
+    background: var(--surface-3);
+}
+
+.topbar-user {
+    position: relative;
+}
+
+.topbar-user-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 8px 4px 4px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text-strong);
+    text-align: left;
+    cursor: pointer;
+}
+
+.topbar-user-btn:hover {
+    background: var(--surface-3);
+}
+
+.topbar-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.topbar-user-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+}
+
+.topbar-user-text strong {
+    font-size: 15px;
+}
+
+.topbar-user-text small {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.topbar-chevron {
+    margin-left: 14px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.topbar-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    z-index: 30;
+    min-width: 200px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 10px 30px rgba(15, 30, 61, 0.15);
+}
+
+.topbar-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.topbar-menu-item:hover {
+    background: var(--surface-3);
+}
+
+.topbar-divider {
+    width: 1px;
+    height: 40px;
+    background: var(--border);
+}
+
+.topbar-clock {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--text-strong);
+}
+
+.topbar-clock > i {
+    font-size: 22px;
+}
+
+.topbar-clock-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.4;
+}
+
+.topbar-clock-text strong {
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.topbar-clock-text small {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+/* Page action buttons placed inside the top bar (e.g. registration). */
+.topbar-page-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Left-side content a page keeps in its header (e.g. dashboard search, page title). */
+.app-topbar .search,
+.app-topbar .topbar-left {
+    margin-right: auto;
+}
+
+.topbar-action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    font-size: 18px;
+    cursor: pointer;
+}
+
+/* Change password */
+.pw-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(15, 32, 51, 0.62);
+}
+
+.pw-card {
+    width: min(420px, 100%);
+    padding: 26px;
+    border-radius: 12px;
+    background: var(--surface);
+    color: var(--text);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.pw-card h2 {
+    margin: 0 0 6px;
+    font-size: 20px;
+    color: var(--text-strong);
+}
+
+.pw-note {
+    margin: 0 0 18px;
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.pw-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.pw-field label {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.pw-field input {
+    padding: 11px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 14px;
+}
+
+.pw-error {
+    min-height: 18px;
+    margin: 0 0 10px;
+    color: #dc2626;
+    font-size: 13px;
+}
+
+.pw-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.pw-btn {
+    padding: 11px 18px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.pw-cancel {
+    background: var(--surface-3);
+    color: var(--text-2);
+}
+
+.pw-save {
+    background: var(--primary);
+    color: #ffffff;
+}
+
+.pw-save:disabled {
+    opacity: 0.6;
+}
+
+.pw-overlay.hidden,
+.topbar-menu.hidden,
+.pw-cancel.hidden {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .topbar-user-text,
+    .topbar-chevron,
+    .topbar-divider,
+    .topbar-clock-text {
+        display: none;
+    }
+    .app-topbar {
+        padding: 0 16px;
+    }
+}

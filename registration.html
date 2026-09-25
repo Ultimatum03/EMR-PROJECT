@@ -5,13 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Patient Registration | EMR</title>
 
+    <link rel="stylesheet" href="theme.css">
     <link rel="stylesheet" href="registration.css">
     <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="topbar.css">
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
     >
-    
+
+    <script src="theme.js"></script>
+    <script src="auth.js"></script>
+    <script>EMR_AUTH.requireAccess();</script>
 </head>
 
 <body>
@@ -23,39 +28,31 @@
     <!-- MAIN CONTENT -->
     <main class="main-content app-main">
 
-        <!-- TOP BAR -->
-        <header class="topbar">
-
-            <div>
-                <h1>Patient Registration</h1>
-                <p>Register and manage hospital patients</p>
-            </div>
-
-            <div class="topbar-right">
-
-                <button class="primary-btn" onclick="showPatientSearch()">
-                    + New Patient
+        <!-- TOP BAR (right-hand cluster rendered by topbar.js) -->
+        <header id="appTopbar">
+            <div class="topbar-page-actions">
+                <button type="button" class="primary-btn topbar-action-btn" onclick="showPatientSearch()"
+                    aria-label="New patient" title="New patient">
+                    <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
                 </button>
-
-                <button class="emergency-btn" onclick="showEmergencyRegistration()">
-                    <span>⚠</span> Emergency Patient
+                <button type="button" class="emergency-btn topbar-action-btn" onclick="showEmergencyRegistration()"
+                    aria-label="Emergency patient" title="Emergency patient">
+                    <i class="fa-solid fa-truck-medical" aria-hidden="true"></i>
                 </button>
-
-                <div class="user-area">
-                    <span>Taryn</span>
-                    <div class="user-avatar">T</div>
-                </div>
-
             </div>
-
         </header>
 
 
         <!-- PAGE CONTENT -->
         <section class="registration-container">
 
-            <!-- KPI CARDS (click to show the list below) -->
-            <div class="kpi-cards">
+            <div class="page-heading">
+                <h1 id="pageTitle">Patient Registration</h1>
+                <p id="pageSubtitle">Register and manage hospital patients</p>
+            </div>
+
+            <!-- KPI CARDS (click to show the list below; hidden on Patient Records) -->
+            <div class="kpi-cards" id="kpiSection">
                 <button type="button" class="kpi-card" data-kpi="registered" aria-expanded="false" aria-controls="kpiPanel">
                     <span class="kpi-label">Registered Today</span>
                     <span class="kpi-value" id="kpiRegisteredToday">0</span>
@@ -129,7 +126,7 @@
                         <button
                             type="button"
                             class="emergency-option unidentified-option"
-                            onclick="window.location.href='emergency-unidentified.html'"
+                            onclick="showUnidentifiedForm()"
                         >
                             <span class="option-icon"><i class="fa-solid fa-user"></i></span>
                             <span class="option-content">
@@ -140,6 +137,126 @@
                         </button>
 
                     </div>
+                </div>
+            </div>
+
+
+            <!-- UNIDENTIFIED EMERGENCY (ported from emergency-unidentified.html) -->
+            <div id="unidentifiedModal" class="registration-modal hidden" role="dialog" aria-modal="true"
+                aria-labelledby="unidentifiedTitle" onclick="handleUnidentifiedBackdropClick(event)">
+                <div class="card registration-modal-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 id="unidentifiedTitle">Unidentified Emergency</h2>
+                            <p>You can update the patient's identity later when information becomes available.</p>
+                        </div>
+                        <button type="button" class="close-modal-btn" aria-label="Close unidentified emergency form"
+                            onclick="closeUnidentifiedForm()">&times;</button>
+                    </div>
+
+                    <form id="unidentifiedForm">
+                        <div class="section-title"><h3>Basic Information</h3></div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="temporaryName">Temporary Patient Name *</label>
+                                <input type="text" id="temporaryName" value="Unknown Patient" maxlength="100"
+                                    placeholder="e.g. Unknown Male 001" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="uSex">Sex *</label>
+                                <select id="uSex" required>
+                                    <option value="">Select sex</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Unknown">Unknown</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="estimatedAge">Estimated Age</label>
+                                <select id="estimatedAge">
+                                    <option value="">Select estimated age</option>
+                                    <option>Infant</option>
+                                    <option>Child</option>
+                                    <option>Teenager</option>
+                                    <option>18 - 25 years</option>
+                                    <option>26 - 35 years</option>
+                                    <option>36 - 45 years</option>
+                                    <option>46 - 55 years</option>
+                                    <option>56 - 65 years</option>
+                                    <option>65+ years</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="arrivalMode">Mode of Arrival *</label>
+                                <select id="arrivalMode" required>
+                                    <option value="">Select mode of arrival</option>
+                                    <option>Ambulance</option>
+                                    <option>Police</option>
+                                    <option>Walk-in</option>
+                                    <option>Brought by Relative</option>
+                                    <option>Brought by Bystander</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="arrivalDate">Date of Arrival *</label>
+                                <input type="date" id="arrivalDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="arrivalTime">Time of Arrival *</label>
+                                <input type="time" id="arrivalTime" required>
+                            </div>
+                        </div>
+
+                        <div class="section-title"><h3>Additional Information</h3></div>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="broughtBy">Brought By</label>
+                                <select id="broughtBy">
+                                    <option value="">Select</option>
+                                    <option>Good Samaritan</option>
+                                    <option>Police</option>
+                                    <option>Ambulance Crew</option>
+                                    <option>Relative</option>
+                                    <option>Friend</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="identificationStatus">Identification Status</label>
+                                <select id="identificationStatus">
+                                    <option>Unidentified</option>
+                                    <option>Partially Identified</option>
+                                </select>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="physicalDescription">Physical Description
+                                    (<span id="descriptionCount">0</span>/500)</label>
+                                <textarea id="physicalDescription" maxlength="500"
+                                    placeholder="Describe clothing, physical features, visible injuries, etc."></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="triageCategory">Triage Category *</label>
+                                <select id="triageCategory" required>
+                                    <option value="">Select triage category</option>
+                                    <option value="Red">🔴 Red — Immediate</option>
+                                    <option value="Yellow">🟡 Yellow — Urgent</option>
+                                    <option value="Green">🟢 Green — Less Urgent</option>
+                                    <option value="Black">⚫ Black — Deceased / Expectant</option>
+                                </select>
+                            </div>
+                            <div class="form-group checkbox-group">
+                                <label><input type="checkbox" id="medicoLegal"> Police / Medico-Legal Case</label>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" onclick="closeUnidentifiedForm()">Cancel</button>
+                            <button type="submit" class="primary-btn">
+                                Next: complete details <i class="fa-solid fa-arrow-right" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -571,6 +688,7 @@
 
     <script src="emr-data.js"></script>
     <script src="sidebar.js"></script>
+    <script src="topbar.js"></script>
     <script src="registration.js"></script>
 
 </body>

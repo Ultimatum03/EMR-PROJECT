@@ -5,49 +5,84 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Emr Login</title>
     <link rel="stylesheet" href="style.css">
+    <script src="auth.js"></script>
+    <script>
+        // Already logged in → go straight in.
+        if (EMR_AUTH.getSession()) {
+            location.replace(EMR_AUTH.safeNext(new URLSearchParams(location.search).get("next")));
+        }
+    </script>
+    <style>
+        .login-error { color: #dc2626; font-size: 14px; min-height: 18px; margin: 4px 0 10px; }
+        .login-btn:disabled { opacity: 0.7; cursor: wait; }
+    </style>
 </head>
- <body>
-   <div class="login-container"> 
-    <!-- Logo -->
-      <div class="logo">
-       <img src="logo 2.png" alt=" Emr Logo">
-         </div>
-      <!-- EMR Name --> 
-    
-  
-             <!-- Login Section -->
-               <div class="login-section">
-                  
-                      <form class="login-form">
-                         <!-- Email -->
-    
-                           <div class="form-group">
-                            <label>Email</label>
-                                  <input type="email" id="email" name="email" placeholder="Enter your email" required > 
-                                </div> 
-                                <!-- Password -->
-                                  
-                                 <div class="form-group">
-                                    <label>Password</label>
-                                         <input type="password" id="password" name="password" placeholder="Enter your password" required >
-                                         </div> 
-                                         <!-- Login Options --> 
-                                          <div class="login-options"> 
-                                            <label class="remember"> 
-                                                <input type="checkbox"> Remember me </label> 
-                                                 <a href="forgot password.html"> Forgot Password? </a> 
-                                                </div> 
+<body>
+    <div class="login-container">
+        <!-- Logo -->
+        <div class="logo">
+            <img src="logo 2.png" alt="Emr Logo">
+        </div>
 
+        <!-- Login Section -->
+        <div class="login-section">
+            <form class="login-form" id="loginForm" novalidate>
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username"
+                        autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="50" required>
+                </div>
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password"
+                        autocomplete="current-password" maxlength="128" required>
+                </div>
 
-                                                <!-- Login Button -->
-                                                  <button type="submit" class="login-btn"> 
-                                                    <a href="dashboard.html" style="text-decoration: none; color: white;"> 
-                                                    Login </a>
-                                                  </button> 
-                                                </form>   
-                                                
-                                            
-                                                    </div> 
-                                                </div> 
- </body>
+                <p class="login-error" id="loginError" role="alert"></p>
+
+                <!-- Login Options -->
+                <div class="login-options">
+                    <label class="remember">
+                        <input type="checkbox" id="remember"> Remember me
+                    </label>
+                    <a href="forgot password.html">Forgot Password?</a>
+                </div>
+
+                <!-- Login Button -->
+                <button type="submit" class="login-btn" id="loginBtn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("loginForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const btn = document.getElementById("loginBtn");
+            const errorBox = document.getElementById("loginError");
+            errorBox.textContent = "";
+            btn.disabled = true;
+            btn.textContent = "Signing in…";
+            EMR_AUTH.login(
+                document.getElementById("username").value,
+                document.getElementById("password").value,
+                document.getElementById("remember").checked
+            ).then(function (result) {
+                if (result.error) {
+                    errorBox.textContent = result.error;
+                    btn.disabled = false;
+                    btn.textContent = "Login";
+                    document.getElementById("password").value = "";
+                    return;
+                }
+                location.replace(EMR_AUTH.safeNext(new URLSearchParams(location.search).get("next")));
+            }).catch(function () {
+                errorBox.textContent = "Login is unavailable in this browser.";
+                btn.disabled = false;
+                btn.textContent = "Login";
+            });
+        });
+    </script>
+</body>
 </html>

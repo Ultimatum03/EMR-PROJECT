@@ -218,3 +218,8 @@ body {
 		border-top: 1px solid #dce3ee;
 	}
 }
+
+/* Shared top bar spans the full width above the centred booking box. */
+.main-content > .app-topbar {
+	margin: -28px -28px 20px;
+}

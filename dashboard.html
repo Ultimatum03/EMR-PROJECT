@@ -5,9 +5,15 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EMR Dashboard</title>
 
+<link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="dashboard.css">
 <link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="topbar.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<script src="theme.js"></script>
+<script src="auth.js"></script>
+<script>EMR_AUTH.requireAccess();</script>
 
 </head>
 <body>
@@ -18,17 +24,9 @@
 <div class="main app-main">
     
 <!-- Navbar -->
-<header>
+<header id="appTopbar">
     <div class="search"><i class="fa-solid fa-magnifying-glass"></i>
         <input type="text" placeholder="Search patients, encounters, prescriptions...">
-    </div>
-
-    <div class="profile">
-        <i class="fa-regular fa-bell"></i>
-        <img src="https://i.pravatar.cc/45">
-    <div>
-        <h4>Taryn</h4><span>Record</span>
-    </div>
     </div>
 </header>
 
@@ -37,7 +35,7 @@
 <section class="dashboard-intro">
 
     <div class="greeting">
-        <h1 id="greetingText">Good Morning, Admin 👋</h1>
+        <h1 id="greetingText">Good Morning, <span data-auth-name>Admin</span> 👋</h1>
     </div>
 
 </section>
@@ -113,15 +111,12 @@
 
 </div>
 
-<script src="auth.js"></script>
 <script>
-    const dashboardSession = EMR_AUTH.requireAccess("dashboard.html");
-    if (dashboardSession) {
-        EMR_AUTH.applySessionToPage(dashboardSession);
-    }
+    EMR_AUTH.applySessionToPage(EMR_AUTH.getSession());
 </script>
 <script src="dashboard.js"></script>
 
 <script src="sidebar.js"></script>
+<script src="topbar.js"></script>
 </body>
 </html>

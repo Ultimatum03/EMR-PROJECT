@@ -22,7 +22,7 @@
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
-    background: #08294b;
+    background: linear-gradient(180deg, #0b2a55 0%, #0a2248 60%, #0d2a57 100%);
     color: #ffffff;
     font-family: "Segoe UI", sans-serif;
 }
@@ -35,8 +35,8 @@
 }
 
 .app-logo > i {
-    font-size: 40px;
-    color: #4f7cae;
+    font-size: 44px;
+    color: #5aa9ff;
 }
 
 .app-logo h2 {
@@ -72,18 +72,24 @@
 .app-nav-link {
     display: flex;
     align-items: center;
-    gap: 15px;
-    padding: 14px 16px;
-    border-radius: 10px;
+    gap: 16px;
+    width: 100%;
+    padding: 16px 18px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
     color: #ffffff;
     text-decoration: none;
-    font-size: 14px;
+    font-family: inherit;
+    font-size: 16px;
+    text-align: left;
     cursor: pointer;
     transition: background 0.2s;
 }
 
 .app-nav-link i {
-    width: 18px;
+    width: 24px;
+    font-size: 20px;
     text-align: center;
 }
 
@@ -92,8 +98,14 @@
 }
 
 .app-nav-link.active {
-    background: #2a4a77;
+    background: #1d5fd6;
     font-weight: 600;
+    box-shadow: 0 4px 12px rgba(29, 95, 214, 0.35);
+}
+
+.app-logout {
+    margin-top: auto;
+    color: #c9d6ea;
 }
 
 .app-nav-group > summary {

@@ -1,76 +1,527 @@
-/* Patient queue page (layout, table and badges come from registration.css). */
+/* Patient Queue page — matches the approved mock. Uses theme.css tokens. */
 
-.clinic-tabs {
+.queue-page {
+    padding: 30px 26px 40px 30px;
+}
+
+/* ---------- Clinic cards ---------- */
+
+.clinic-cards {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(150px, 1fr));
+    gap: 18px;
+    margin-bottom: 26px;
+}
+
+.clinic-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 106px;
+    padding: 16px 16px 16px 18px;
+    border: 1px solid var(--tone-border);
+    border-radius: 10px;
+    background: var(--tone-bg);
+    color: var(--text-strong);
+    text-align: left;
+    cursor: pointer;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.clinic-card:hover {
+    box-shadow: 0 6px 16px rgba(15, 30, 61, 0.08);
+}
+
+.clinic-card-icon {
+    display: inline-flex;
+    flex: 0 0 58px;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: var(--tone-icon-bg);
+    color: var(--tone-icon);
+    font-size: 26px;
+}
+
+.clinic-card-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.clinic-card-name {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--tone-text);
+}
+
+.clinic-card-count {
+    font-size: 16px;
+    color: var(--muted);
+}
+
+.clinic-card-count strong {
+    font-size: 21px;
+    color: var(--text-strong);
+}
+
+.clinic-card-chevron {
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.clinic-card.active {
+    background: #1d5fd6;
+    border-color: #1d5fd6;
+    box-shadow: 0 6px 16px rgba(29, 95, 214, 0.35);
+}
+
+.clinic-card.active .clinic-card-name,
+.clinic-card.active .clinic-card-count,
+.clinic-card.active .clinic-card-count strong,
+.clinic-card.active .clinic-card-chevron {
+    color: #ffffff;
+}
+
+.clinic-card.active .clinic-card-icon {
+    background: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+}
+
+/* Tones (light) */
+.tone-blue   { --tone-bg: #eaf1fd; --tone-border: #c9dbf8; --tone-icon-bg: #d6e4fb; --tone-icon: #1d5fd6; --tone-text: #0f1e3d; }
+.tone-purple { --tone-bg: #f4f0fd; --tone-border: #e2d8f8; --tone-icon-bg: #e7defb; --tone-icon: #6d3fd0; --tone-text: #0f1e3d; }
+.tone-green  { --tone-bg: #ecf8f1; --tone-border: #c9ecd7; --tone-icon-bg: #d3f0df; --tone-icon: #18a058; --tone-text: #127a44; }
+.tone-amber  { --tone-bg: #fff6e8; --tone-border: #fbe3bd; --tone-icon-bg: #fde8c4; --tone-icon: #f59e0b; --tone-text: #0f1e3d; }
+.tone-sky    { --tone-bg: #eef5ff; --tone-border: #cfe0fa; --tone-icon-bg: #d9e8fd; --tone-icon: #1d5fd6; --tone-text: #0f1e3d; }
+.tone-red    { --tone-bg: #fdeeee; --tone-border: #f7cfcf; --tone-icon-bg: #fbdada; --tone-icon: #e02424; --tone-text: #0f1e3d; }
+
+/* Tones (dark) */
+:root[data-theme="dark"] .tone-blue   { --tone-bg: #1b2b47; --tone-border: #2b4470; --tone-icon-bg: #24406b; --tone-icon: #7fb0ff; --tone-text: #e5e7eb; }
+:root[data-theme="dark"] .tone-purple { --tone-bg: #2a2347; --tone-border: #43386e; --tone-icon-bg: #3a2f63; --tone-icon: #b69cff; --tone-text: #e5e7eb; }
+:root[data-theme="dark"] .tone-green  { --tone-bg: #173229; --tone-border: #25513f; --tone-icon-bg: #1f4535; --tone-icon: #4ade80; --tone-text: #86efac; }
+:root[data-theme="dark"] .tone-amber  { --tone-bg: #34290f; --tone-border: #5a4618; --tone-icon-bg: #4a3a14; --tone-icon: #fbbf24; --tone-text: #e5e7eb; }
+:root[data-theme="dark"] .tone-sky    { --tone-bg: #19304a; --tone-border: #2a4d73; --tone-icon-bg: #22425f; --tone-icon: #7cc0ff; --tone-text: #e5e7eb; }
+:root[data-theme="dark"] .tone-red    { --tone-bg: #3a1c1f; --tone-border: #62292e; --tone-icon-bg: #512328; --tone-icon: #f87171; --tone-text: #e5e7eb; }
+
+/* ---------- Queue card ---------- */
+
+.queue-card {
+    background: var(--surface);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 0 26px 26px;
+}
+
+.queue-card-head {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 0 20px;
+    border-bottom: 1px solid var(--border);
+    margin: 0 -26px;
+    padding-left: 26px;
+    padding-right: 26px;
+}
+
+.queue-clinic-icon {
+    display: inline-flex;
+    flex: 0 0 56px;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--tone-icon-bg, var(--accent-soft));
+    color: var(--tone-icon, var(--accent));
+    font-size: 24px;
+}
+
+.queue-card-title {
+    flex: 1;
+}
+
+.queue-card-title h2 {
+    font-size: 25px;
+    color: var(--text-strong);
+    margin-bottom: 6px;
+}
+
+.queue-card-title p {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
-    margin-bottom: 20px;
+    color: var(--muted);
+    font-size: 16px;
 }
 
-.clinic-tab {
+.summary-sep {
+    color: var(--border-strong);
+}
+
+.queue-card-tools {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
-    min-width: 130px;
-    padding: 12px 16px;
-    border: 1px solid #d1d5db;
-    border-radius: 10px;
-    background: white;
-    color: #1f2937;
-    text-align: left;
-}
-
-.clinic-tab.active {
-    border-color: #123c69;
-    background: #123c69;
-    color: white;
-}
-
-.clinic-tab-name {
-    font-weight: 600;
-    font-size: 14px;
-}
-
-.clinic-tab-load {
-    font-size: 12px;
-    opacity: 0.8;
+    align-items: center;
+    gap: 18px;
 }
 
 .live-indicator {
-    color: #16a34a;
-    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--success);
+    font-size: 16px;
     font-weight: 600;
 }
 
-.live-indicator i {
-    font-size: 9px;
+.live-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--success);
 }
 
-.queue-patient-id {
-    color: #6b7280;
-    font-size: 12px;
+.tools-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
 }
 
-.visit-kind {
+.refresh-btn {
+    border: none;
+    background: transparent;
+    color: var(--accent);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* ---------- Filters ---------- */
+
+.queue-filters {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+    padding: 14px 0 28px;
+}
+
+.queue-search {
+    display: flex;
+    flex: 1 1 540px;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 56px;
+    align-self: center;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--muted);
+}
+
+.queue-search input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 16px;
+}
+
+.queue-select {
+    display: flex;
+    flex: 0 1 220px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    padding: 8px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--surface);
+}
+
+.queue-select span {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.queue-select select {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    align-self: center;
+    height: 56px;
+    margin-left: 18px;
+    padding: 0 30px;
+    border: 1.5px solid var(--accent);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 16px;
+    font-weight: 600;
+}
+
+/* ---------- Table ---------- */
+
+.queue-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+}
+
+.queue-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.queue-table th {
+    padding: 20px 16px;
+    background: var(--surface-2);
+    color: var(--text-strong);
+    font-size: 16px;
+    font-weight: 600;
+    text-align: left;
+}
+
+.queue-table td {
+    padding: 18px 16px;
+    border-top: 1px solid var(--border);
+    color: var(--text-strong);
+    font-size: 15px;
+    vertical-align: middle;
+}
+
+.q-index {
+    font-weight: 600;
+}
+
+.q-patient {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.q-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    font-size: 18px;
+    background: var(--accent-soft);
+    color: #8aa0c4;
+}
+
+.q-name {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.q-flag {
+    color: #dc2626;
+    font-size: 13px;
+}
+
+.q-meta {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.q-type {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.type-appointment { background: #efeafd; color: #6d3fd0; }
+.type-walk-in     { background: #e6f3fb; color: #0e7490; }
+.type-emergency   { background: #fde8e8; color: #c81e1e; }
+
+.q-visit {
+    font-size: 15px;
+}
+
+.q-status {
     display: inline-block;
-    padding: 2px 8px;
+    padding: 5px 12px;
     border-radius: 999px;
-    font-size: 11px;
-    font-weight: 700;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
 }
 
-.kind-new {
-    background: #dbeafe;
-    color: #1d4ed8;
+.q-status.status-in-consultation { background: #e3edfd; color: #1d5fd6; }
+.q-status.status-checked-in      { background: #fef3c7; color: #92400e; }
+.q-status.status-scheduled       { background: #eef2f7; color: #475569; }
+.q-status.status-done            { background: #dcfce7; color: #166534; }
+
+.q-actions {
+    display: flex;
+    align-items: center;
+    gap: 22px;
 }
 
-.kind-followup {
-    background: #f1f5f9;
-    color: #475569;
+.view-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 22px;
+    border: none;
+    border-radius: 6px;
+    background: #16a34a;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-.queue-btn {
-    padding: 6px 12px;
-    font-size: 12px;
+.view-btn:hover {
+    background: #15803d;
 }
+
+.kebab {
+    position: relative;
+}
+
+.kebab-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-strong);
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.kebab-btn:hover {
+    background: var(--surface-3);
+}
+
+.kebab-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 20;
+    min-width: 190px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: 0 10px 30px rgba(15, 30, 61, 0.15);
+}
+
+.kebab-item {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.kebab-item:hover {
+    background: var(--surface-3);
+}
+
+.kebab-empty {
+    display: block;
+    padding: 10px 12px;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.kebab-menu.hidden {
+    display: none;
+}
+
+/* ---------- Footer / pagination ---------- */
+
+.queue-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 26px;
+    color: var(--text-2);
+    font-size: 15px;
+}
+
+.pager {
+    display: flex;
+    gap: 14px;
+}
+
+.pager-btn {
+    min-width: 40px;
+    height: 40px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface-2);
+    color: var(--text-2);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.pager-btn.active {
+    border-color: #1d5fd6;
+    background: #1d5fd6;
+    color: #ffffff;
+}
+
+.pager-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+@media (max-width: 1200px) {
+    .clinic-cards { grid-template-columns: repeat(3, 1fr); }
+    .queue-filters { flex-wrap: wrap; }
+    .filter-btn { margin-left: 0; }
+}
+
+@media (max-width: 700px) {
+    .clinic-cards { grid-template-columns: 1fr 1fr; }
+    .queue-card-head { flex-wrap: wrap; }
+}
+
+#queueError:empty {
+    display: none;
+}
+
+#queueError {
+    margin: 0 0 16px;
+}
+
+/* Dark-mode badge colours */
+:root[data-theme="dark"] .type-appointment { background: #2e2553; color: #c4b5fd; }
+:root[data-theme="dark"] .type-walk-in     { background: #123445; color: #7dd3fc; }
+:root[data-theme="dark"] .type-emergency   { background: #4a1d1f; color: #fca5a5; }
+:root[data-theme="dark"] .q-status.status-in-consultation { background: #1e3a6b; color: #93c5fd; }
+:root[data-theme="dark"] .q-status.status-checked-in      { background: #4a3a10; color: #fcd34d; }
+:root[data-theme="dark"] .q-status.status-scheduled       { background: #334155; color: #cbd5e1; }
+:root[data-theme="dark"] .q-status.status-done            { background: #14532d; color: #86efac; }

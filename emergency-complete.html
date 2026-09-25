@@ -7,7 +7,13 @@
     <title>Emergency Registration Complete</title>
 
     <link rel="stylesheet" href="emergency-complete.css">
+<link rel="stylesheet" href="theme.css">
 <link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="topbar.css">
+<script src="theme.js"></script>
+<script src="auth.js"></script>
+<script>EMR_AUTH.requireAccess();</script>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 
@@ -23,25 +29,10 @@
     <main class="main-content app-main">
 
         <!-- TOPBAR -->
-        <header class="topbar">
-
+        <header id="appTopbar">
             <div class="topbar-left">
                 <h2>Emergency Registration</h2>
             </div>
-
-            <div class="topbar-right">
-
-                <div class="notification">
-                    🔔
-                </div>
-
-                <div class="user-info">
-                    <strong>Taryn</strong>
-                    <span>Record officer</span>
-                </div>
-
-            </div>
-
         </header>
 
 
@@ -283,7 +274,7 @@
         );
 
         window.location.href =
-            "emergency-unidentified.html";
+            "registration.html"; // the unidentified form now opens from Registration → Emergency
 
     }
 
@@ -506,7 +497,7 @@
         );
 
         window.location.href =
-            "emergency-unidentified.html";
+            "registration.html"; // the unidentified form now opens from Registration → Emergency
 
     }
 
@@ -521,5 +512,6 @@
 </script>
 
 <script src="sidebar.js"></script>
+<script src="topbar.js"></script>
 </body>
 </html>

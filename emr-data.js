@@ -46,6 +46,11 @@ const EMR = (function () {
 
     function getPatients() { return readList("patients"); }
     function savePatients(list) { localStorage.setItem("patients", JSON.stringify(list)); }
+    // Async-ready read used by the records table (skeleton shows while pending).
+    // localStorage resolves at once; the Phase 2 API call will replace this body.
+    function fetchPatients() {
+        return new Promise(function (resolve) { resolve(getPatients()); });
+    }
     function getPatient(id) { return getPatients().find(function (p) { return p.id === id; }) || null; }
 
     function getVisits() { return readList("visits"); }
@@ -164,11 +169,68 @@ const EMR = (function () {
         return flag;
     }
 
+    // Patient details (shared by registration's detail modal/expanded rows and the queue's View).
+    const DETAIL_GROUPS = [
+        ["Personal", [["Patient ID", "id"], ["First Name", "firstName"], ["Last Name", "lastName"],
+            ["Other Name", "otherName"], ["Date of Birth", "dateOfBirth"], ["Gender", "gender"],
+            ["Marital Status", "maritalStatus"]]],
+        ["Medical", [["Blood Group", "bloodGroup"], ["Genotype", "genotype"]]],
+        ["Contact", [["Phone", "phone"], ["Email", "email"], ["Address", "address"]]],
+        ["Next of Kin", [["Name", "nextOfKin"], ["Relationship", "relationship"], ["Phone", "nextOfKinPhone"]]],
+        ["Registration", [["Type", "patientType"], ["Registered", "registeredAt"]]]
+    ];
+
+    function fieldValue(patient, key) {
+        const value = patient[key];
+        if (key === "registeredAt" && value) {
+            const d = new Date(value);
+            return isNaN(d) ? "—" : d.toLocaleString();
+        }
+        return value || "—";
+    }
+
+    function renderDetailGroups(patient, container) {
+        container.replaceChildren(photoElement(patient, "detail-photo"));
+        const grid = document.createElement("div");
+        grid.className = "detail-grid";
+        DETAIL_GROUPS.forEach(function (group) {
+            const section = document.createElement("section");
+            const heading = document.createElement("h4");
+            heading.textContent = group[0];
+            const dl = document.createElement("dl");
+            dl.className = "detail-list";
+            group[1].forEach(function (field) {
+                const dt = document.createElement("dt");
+                dt.textContent = field[0];
+                const dd = document.createElement("dd");
+                dd.textContent = fieldValue(patient, field[1]);
+                dl.append(dt, dd);
+            });
+            section.append(heading, dl);
+            grid.appendChild(section);
+        });
+        container.appendChild(grid);
+    }
+
+    // "28 yrs (12 May 1998)" — empty string if DOB is missing/invalid.
+    function ageAndDob(dob) {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(dob || "")) return "";
+        const birth = new Date(dob + "T00:00:00");
+        if (isNaN(birth)) return "";
+        const now = new Date();
+        let age = now.getFullYear() - birth.getFullYear();
+        if (now.getMonth() < birth.getMonth() || (now.getMonth() === birth.getMonth() && now.getDate() < birth.getDate())) age--;
+        const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const pretty = birth.getDate() + " " + MONTHS[birth.getMonth()] + " " + birth.getFullYear();
+        return (age < 1 ? "<1 yr" : age + (age === 1 ? " yr" : " yrs")) + " (" + pretty + ")";
+    }
+
     return {
+        renderDetailGroups: renderDetailGroups, ageAndDob: ageAndDob,
         isSafePhoto: isSafePhoto, photoElement: photoElement, emergencyFlag: emergencyFlag,
         CLINICS: CLINICS, NEXT_STATUS: NEXT_STATUS, STATUS_LABELS: STATUS_LABELS,
         today: today, nowTime: nowTime, dateKey: dateKey, newId: newId, clinic: clinic,
-        getPatients: getPatients, savePatients: savePatients, getPatient: getPatient,
+        getPatients: getPatients, fetchPatients: fetchPatients, savePatients: savePatients, getPatient: getPatient,
         getVisits: getVisits, clinicLoad: clinicLoad, isFull: isFull, clinicVisitsToday: clinicVisitsToday,
         isNewToClinic: isNewToClinic, patientClinicSummary: patientClinicSummary,
         addVisit: addVisit, setVisitStatus: setVisitStatus

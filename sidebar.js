@@ -1,12 +1,11 @@
 // Unified sidebar. Each page declares <aside id="appSidebar" data-page="..."></aside>
 // and gets only its own menu items. Edit SIDEBAR_MENUS to change what a page shows.
 (function () {
-    const DASHBOARD = { label: "Dashboard", href: "dashboard.html", icon: "fa-solid fa-table-columns" };
-    const REGISTRATION = { label: "Registration", href: "registration.html", icon: "fa-solid fa-notes-medical" };
+    const DASHBOARD = { label: "Dashboard", href: "dashboard.html", icon: "fa-solid fa-table-cells-large" };
+    const REGISTRATION = { label: "Registration", href: "registration.html", icon: "fa-solid fa-user-plus" };
     const RECORDS = { label: "Patient Records", href: "registration.html#records", icon: "fa-solid fa-folder-open" };
-    const QUEUE = { label: "Patient Queue", href: "queue.html", icon: "fa-solid fa-people-line" };
+    const QUEUE = { label: "Patient Queue", href: "queue.html", icon: "fa-solid fa-users" };
     const APPOINTMENTS = { label: "Appointments", href: "appointment.html", icon: "fa-regular fa-calendar" };
-    const UNIDENTIFIED = { label: "Unidentified Emergency", href: "emergency-unidentified.html", icon: "fa-solid fa-truck-medical" };
 
     const SIDEBAR_MENUS = {
         dashboard: [DASHBOARD, REGISTRATION, QUEUE, APPOINTMENTS,
@@ -16,11 +15,11 @@
                 { label: "Children Wards", href: "#" }, { label: "Female Wards", href: "#" }, { label: "Male Wards", href: "#" }] },
             { label: "Settings", href: "setting.html", icon: "fa-solid fa-gear" }],
         registration: [DASHBOARD, { label: "Register Patient", href: "registration.html", icon: "fa-solid fa-user-plus" },
-            RECORDS, QUEUE, UNIDENTIFIED],
+            RECORDS, QUEUE],
         queue: [DASHBOARD, QUEUE, RECORDS, REGISTRATION],
         appointment: [DASHBOARD, APPOINTMENTS, QUEUE],
-        "emergency-unidentified": [DASHBOARD, UNIDENTIFIED, REGISTRATION],
-        "emergency-complete": [DASHBOARD, UNIDENTIFIED, { label: "Emergency Record", href: "emergency-complete.html", icon: "fa-solid fa-file-medical" }]
+        "emergency-unidentified": [DASHBOARD, REGISTRATION],
+        "emergency-complete": [DASHBOARD, REGISTRATION, { label: "Emergency Record", href: "emergency-complete.html", icon: "fa-solid fa-file-medical" }]
     };
 
     const sidebar = document.getElementById("appSidebar");
@@ -64,8 +63,16 @@
         nav.appendChild(group);
     });
 
+    // Logout pinned to the bottom of every sidebar.
+    const logout = el("button", "app-nav-link app-logout");
+    logout.type = "button";
+    logout.append(el("i", "fa-solid fa-right-from-bracket"), el("span", "", "Logout"));
+    logout.addEventListener("click", function () {
+        if (typeof EMR_AUTH !== "undefined") EMR_AUTH.logout();
+    });
+
     sidebar.classList.add("app-sidebar");
-    sidebar.append(logo, toggle, nav);
+    sidebar.append(logo, toggle, nav, logout);
     document.body.classList.add("has-app-sidebar");
 
     // Active item: exact page + hash match wins; otherwise the page's hash-less link.
