@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Queue | EMR</title>
+
+    <link rel="stylesheet" href="registration.css">
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="queue.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+</head>
+
+<body>
+
+    <aside id="appSidebar" data-page="queue"></aside>
+
+    <main class="main-content app-main">
+
+        <header class="topbar">
+            <div>
+                <h1>Patient Queue</h1>
+                <p>Today's live queue by clinic</p>
+            </div>
+            <div class="user-area">
+                <span id="queueClock"></span>
+            </div>
+        </header>
+
+        <section class="registration-container">
+
+            <div id="clinicTabs" class="clinic-tabs" role="tablist" aria-label="Clinics"></div>
+
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <h2 id="queueTitle">Clinic</h2>
+                        <p id="queueSummary"></p>
+                    </div>
+                    <span class="live-indicator"><i class="fa-solid fa-circle"></i> Live</span>
+                </div>
+
+                <p id="queueError" class="search-status error" role="alert"></p>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Patient</th>
+                                <th>Type</th>
+                                <th>Visit</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="queueBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <script src="emr-data.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="queue.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,76 @@
+/* Patient queue page (layout, table and badges come from registration.css). */
+
+.clinic-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.clinic-tab {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    min-width: 130px;
+    padding: 12px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 10px;
+    background: white;
+    color: #1f2937;
+    text-align: left;
+}
+
+.clinic-tab.active {
+    border-color: #123c69;
+    background: #123c69;
+    color: white;
+}
+
+.clinic-tab-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.clinic-tab-load {
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.live-indicator {
+    color: #16a34a;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.live-indicator i {
+    font-size: 9px;
+}
+
+.queue-patient-id {
+    color: #6b7280;
+    font-size: 12px;
+}
+
+.visit-kind {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.kind-new {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.kind-followup {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.queue-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+}

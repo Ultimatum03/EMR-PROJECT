@@ -6,6 +6,7 @@
     <title>Patient Registration | EMR</title>
 
     <link rel="stylesheet" href="registration.css">
+    <link rel="stylesheet" href="sidebar.css">
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
@@ -15,36 +16,12 @@
 
 <body>
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
-
-        <div class="logo">
-            <h2>PHIFET EMR</h2>
-            <span>Electronic Medical Record</span>
-        </div>
-
-        <nav>
-            <a href="dashboard.html">
-                <i class="fa-solid fa-table-columns"></i>
-                Dashboard
-            </a>
-
-            <a href="registration.html" id="registrationNavLink" class="active">
-                <i class="fa-solid fa-notes-medical"></i>
-                Registration
-            </a>
-
-            <a href="#records" id="recordsNavLink">
-                <i class="fa-solid fa-folder-open"></i>
-                Patient Records
-            </a>
-        </nav>
-
-    </aside>
+    <!-- SIDEBAR (rendered by sidebar.js) -->
+    <aside id="appSidebar" data-page="registration"></aside>
 
 
     <!-- MAIN CONTENT -->
-    <main class="main-content">
+    <main class="main-content app-main">
 
         <!-- TOP BAR -->
         <header class="topbar">
@@ -73,9 +50,9 @@
                     <span>New registrations today</span>
                 </div>
                 <div class="kpi-card">
-                    <p>Appointments</p>
+                    <p>Appointments Today</p>
                     <h2 id="kpiAppointments">0</h2>
-                    <span>Booking not connected yet</span>
+                    <span>Booked appointments for today</span>
                 </div>
                 <div class="kpi-card kpi-emergency">
                     <p>Emergency Today</p>
@@ -204,6 +181,44 @@
                             onclick="closePatientDetail()">&times;</button>
                     </div>
                     <div id="patientDetailList"></div>
+                    <div id="patientDetailActions" class="patient-actions"></div>
+                </div>
+            </div>
+
+
+            <!-- SEND TO CLINIC / BOOK APPOINTMENT (shared) -->
+            <div id="visitModal" class="registration-modal hidden" role="dialog" aria-modal="true"
+                aria-labelledby="visitTitle" onclick="handleVisitBackdropClick(event)">
+                <div class="card registration-modal-card visit-modal-card">
+                    <div class="card-header">
+                        <div>
+                            <h2 id="visitTitle">Send to Clinic</h2>
+                            <p id="visitPatient"></p>
+                        </div>
+                        <button type="button" class="close-modal-btn" aria-label="Close"
+                            onclick="closeVisitModal()">&times;</button>
+                    </div>
+                    <form id="visitForm" novalidate>
+                        <div class="form-grid">
+                            <div class="form-group full-width">
+                                <label for="visitClinic">Clinic (today's load / daily capacity)</label>
+                                <select id="visitClinic" required></select>
+                            </div>
+                            <div class="form-group visit-booking-field">
+                                <label for="visitDate">Date</label>
+                                <input type="date" id="visitDate">
+                            </div>
+                            <div class="form-group visit-booking-field">
+                                <label for="visitTime">Time</label>
+                                <input type="time" id="visitTime">
+                            </div>
+                        </div>
+                        <p id="visitError" class="search-status error" role="alert"></p>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="visitCancelBtn" onclick="closeVisitModal()">Skip</button>
+                            <button type="submit" class="primary-btn" id="visitSubmitBtn">Send to Clinic</button>
+                        </div>
+                    </form>
                 </div>
             </div>
 
@@ -238,6 +253,37 @@
 
 
                 <form id="patientForm">
+
+                    <!-- PATIENT PHOTO -->
+                    <div class="section-title">
+                        <h3>Patient Photo</h3>
+                    </div>
+
+                    <div class="photo-field">
+                        <div class="photo-preview" id="photoPreview">
+                            <i class="fa-solid fa-user" aria-hidden="true"></i>
+                        </div>
+                        <div class="photo-controls">
+                            <label class="secondary-btn photo-upload-btn">
+                                <i class="fa-solid fa-upload"></i> Upload Photo
+                                <input type="file" id="photoInput" accept="image/jpeg,image/png" hidden>
+                            </label>
+                            <button type="button" class="secondary-btn" id="cameraBtn">
+                                <i class="fa-solid fa-camera"></i> Take Photo
+                            </button>
+                            <button type="button" class="cancel-btn hidden" id="removePhotoBtn">Remove</button>
+                            <p class="photo-hint">JPEG or PNG, up to 5 MB. Resized to 256px.</p>
+                            <p class="search-status error" id="photoError" role="alert"></p>
+                        </div>
+                    </div>
+
+                    <div class="camera-panel hidden" id="cameraPanel">
+                        <video id="cameraVideo" autoplay playsinline muted></video>
+                        <div class="form-actions">
+                            <button type="button" class="cancel-btn" id="cameraCancelBtn">Cancel</button>
+                            <button type="button" class="primary-btn" id="cameraCaptureBtn">Capture</button>
+                        </div>
+                    </div>
 
                     <!-- PERSONAL INFORMATION -->
                     <div class="section-title">
@@ -428,6 +474,7 @@
                         <button
                             type="submit"
                             class="primary-btn"
+                            id="patientSubmitBtn"
                         >
                             Register Patient
                         </button>
@@ -481,7 +528,7 @@
                                 <th>Gender</th>
                                 <th>Date of Birth</th>
                                 <th>Phone</th>
-                                <th>Status</th>
+                                <th>Clinic / Appointment</th>
                                 <th>Details</th>
                             </tr>
                         </thead>
@@ -507,7 +554,9 @@
     </main>
 
 
+    <script src="emr-data.js"></script>
+    <script src="sidebar.js"></script>
     <script src="registration.js"></script>
 
 </body>
-</html>
+</html>

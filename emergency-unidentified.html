@@ -11,6 +11,7 @@
     <title>Nobless EMR | Unidentified Emergency</title>
 
     <link rel="stylesheet" href="emergency-unidentified.css">
+<link rel="stylesheet" href="sidebar.css">
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
@@ -25,45 +26,13 @@
 
     <!-- ================= SIDEBAR ================= -->
 
-    <aside class="sidebar">
-
-        <div class="logo">
-
-            <h2>Nobless EMR</h2>
-
-            <span>Electronic Medical Record</span>
-
-        </div>
-
-
-        <nav class="sidebar-menu">
-
-            <a href="dashboard.html">
-
-                <i class="fa-solid fa-table-columns"></i>
-
-                <span>Dashboard</span>
-
-            </a>
-
-
-            <a href="registration.html" class="active">
-
-                <i class="fa-solid fa-user-plus"></i>
-
-                <span>Registration</span>
-
-            </a>
-
-        </nav>
-
-    </aside>
+    <aside id="appSidebar" data-page="emergency-unidentified"></aside>
 
 
 
     <!-- ================= MAIN CONTENT ================= -->
 
-    <main class="main-content">
+    <main class="main-content app-main">
 
 
         <!-- TOP BAR -->
@@ -874,6 +843,7 @@ document
 
 </script>
 
+<script src="sidebar.js"></script>
 </body>
 
 </html>

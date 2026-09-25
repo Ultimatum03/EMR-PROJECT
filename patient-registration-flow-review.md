@@ -118,6 +118,8 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | F4 | `registration.html` Identified Emergency | Opened the registration form on top of the still-open emergency modal; closing the form left the emergency modal behind. | `showPatientSearch(true)` closes the emergency modal first. |
 | F5 | `registration.js` → `showRegistrationForm()` | Hid the Patient Records table when opening the form, leaving the sidebar showing "Patient Records" with no table. | Line removed; the form is a modal and doesn't need to hide the table. |
 | F6 | `registration.js` → `loadPatients()` | Corrupt `patients` data in localStorage threw an uncaught error. Now that records open from a URL (`#records`), this would break on page load. | Reads through `getStoredPatients()`; shows "Could not read patient records." |
+| F7 | `dashboard.html` sidebar (was O4) | Linked to `appointments.html`; file is `appointment.html`. | Sidebar config links `appointment.html`. |
+| F8 | `registration.js` submit (was O8) | Raw `JSON.parse`; silent failure on corrupt data. | Guarded read with a message; a full-storage error keeps the form open so nothing typed is lost. |
 
 ### D2. Open — must fix
 
@@ -126,13 +128,18 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | O1 | High | `dashboard.html` line 201–206 | Loads `auth.js`, which is not in the project. `EMR_AUTH.requireAccess(...)` throws `ReferenceError`. | Dashboard script fails on load; no access check actually runs. |
 | O2 | High | `emergency-complete.html` ~line 438 | Script sets `textContent` on `#bloodPressure`, `#pulse`, etc. — those elements don't exist in the page. | Script throws and **everything after the vital-signs section never runs**. |
 | O3 | Medium | `doctor-dashboard.html` line 356 | Loads `doctor-dashboard.js`, which is not in the project. | Doctor dashboard has no working script. |
-| O4 | Medium | `dashboard.html` sidebar | Links to `appointments.html`; the file is `appointment.html`. | Broken link (404). |
 | O5 | Medium | `registration.js` → `generatePatientID()` | Random 6-digit ID, never checked against existing IDs. | Two patients can share an ID; lookups by ID then return the wrong person. |
 | O6 | Medium | `registration.js` submit handler | No duplicate check on submit — only the search screen gates it (planned: Phase 6, server-side). | Duplicates still possible if the search step is bypassed. |
-| O7 | Medium | `appointment.html` | Booking form has no script; nothing is saved. | Appointments KPI is a fixed `0` placeholder ("Booking not connected yet"). |
-| O8 | Low | `registration.js` submit handler | Still uses raw `JSON.parse`; on corrupt data it throws with no message to the user (data is not overwritten). | Silent failure on registration. |
+| O7 | Medium | `appointment.html` | Booking form still has no script and isn't linked to a patient. | Appointments are now booked from the patient record instead (see E). This page is a dead end until rebuilt. |
 | O9 | Low | `emergency-unidentified.html` line ~745 | `renderUnidentifiedRecords("unidentifiedRecordsList")` targets an element that doesn't exist. | Dead call on every load (harmless; returns early). |
-| O10 | Low | `appointment.html`, `dashboard.js` | Branding mismatch: "Nobless EMR" / `noblessAdminSession` vs "PHIFET EMR" elsewhere. | Cosmetic / naming confusion. |
+| O10 | Low | `dashboard.js` | `noblessAdminSession` naming (sidebar branding is now "PHIFET EMR" everywhere). | Naming confusion. |
+| O11 | High | `emr-data.sql` | Mixed SQL dialects: `USE` and `DATETIME2` are not PostgreSQL. | Script won't run on the planned database. |
+| O12 | High | `emr-data.sql` → `users` | `password VARCHAR(100)` with no hashing noted; no `UNIQUE` on username/email. | Must store a slow hash (argon2/bcrypt), never the password. |
+| O13 | Medium | `emr-data.sql` → `patients` | `patient_id INT` vs app IDs `PT-123456`; `other_name`, `email`, `address`, `marital_status`, next-of-kin fields `NOT NULL` but optional in the form; no blood group, genotype, emergency flag, photo, `registered_at`; no `(last_name, first_name, date_of_birth)` index; `updated_at` never auto-updates. No `clinics` / `visits` tables yet. | Inserts from the current form would fail; schema doesn't match the app. |
+| O14 | Medium | `doctor-dashboard.html` | Loads `doctor-dashboard.css` (missing) as well as `doctor-dashboard.js` (O3); links to 7 pages that don't exist. Not moved to the unified sidebar (different role, separate decision). | Page is unstyled and non-functional. |
+| O15 | Medium | `emergency-complete.html` ~line 285 | When no patient is in sessionStorage it sets `location.href` to redirect but keeps running, then throws reading `emergencyId` of `null`. | Error on every direct visit; needs a `return` after the redirect. |
+| O16 | Low | `dashboard.html` sidebar | "Settings" links to `setting.html` (missing); Services / Wards sub-items link to `#`. | Dead links (kept as they were). |
+| O17 | Low | `dashboard.css`, `appointment.css`, `emergency-unidentified.css`, `emergency-complete.css` | Old `.sidebar` / `.logo` rules are now unused (removed from `registration.css` only). | Dead CSS — clean up when those files are next touched. |
 
 ### D3. Known limitations (by design for now)
 
@@ -142,7 +149,9 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | L2 | No server-side checks (Phase 4 "ID tampering blocked server-side"). | Can't exist until the Phase 2 API. |
 | L3 | KPIs rely on `registeredAt`, added 2026-09-25. | Records saved before that have no date and are not counted in "Registered Today" / "Emergency Today". |
 | L4 | "Emergency Today" counts identified emergency registrations only. | Unidentified emergencies live in a separate store (`unidentifiedEmergencyRecords`) and are not counted. |
-| L5 | KPIs are computed on page load and after a registration on this page. | Changes made in another tab show after a refresh. |
+| L5 | KPIs and records update live across tabs in the same browser (storage event). | Other computers see changes only after the backend exists. |
+| L6 | Patient photos are stored in localStorage (~20–30 KB each after resizing). | Browser storage is ~5 MB total → roughly 150–200 patients with photos. Must move to server storage. Save errors on a full store are caught and reported. |
+| L7 | "Live" queue = same browser only (storage event + 30 s refresh). | Multi-workstation queues need the backend (websocket or polling). |
 
 ### D4. Open decisions (Phase 7)
 
@@ -151,3 +160,41 @@ Found while building Phases 3–5 and the follow-up UI work. **Status** is as of
 | Q1 | Existing patient arriving as an emergency: "Continue" only shows the record — nothing records the emergency visit. Likely needs a visit/encounter record separate from the patient record. |
 | Q2 | Same name + DOB, different person: the found screen has no "not this person — register new" option. |
 | Q3 | Exact vs fuzzy name matching (currently exact, case-insensitive, trimmed). |
+
+
+---
+
+## E. Unified Sidebar, Clinics, Visits & Queue (2026-09-25)
+
+### What was built
+
+| Item | Where |
+|---|---|
+| Unified sidebar — one config (`SIDEBAR_MENUS`), each page shows only its own items, Dashboard always first, collapse state remembered | `sidebar.js`, `sidebar.css`; used by dashboard, registration, queue, appointment, emergency-unidentified, emergency-complete |
+| Shared data layer — clinics, patients, visits, capacity, status rules | `emr-data.js` |
+| Edit patient (same ID, registration type and date kept; duplicate name+DOB warning) | Detail modal + expanded row → **Edit** |
+| Patient photo — upload (JPEG/PNG ≤ 5 MB) or webcam; re-encoded to 256px JPEG (strips metadata); only our own JPEG format is ever rendered | Registration form |
+| "Status" column → **Clinic / Appointment**: today's visit + status, or today's appointment + **Check in**, or next appointment, or last clinic | Patient Records |
+| Emergency flag on the row | Patient Records, Queue |
+| Live patient queue per clinic — New / Follow-up per clinic, Check in → Start consultation → Complete | `queue.html`, `queue.js`, `queue.css` |
+| After registration → **Send to Clinic** with today's load / capacity; full clinics disabled; emergency registrations preselect Emergency | Registration |
+| Book appointment (clinic, date, time) | Detail modal + expanded row |
+
+### Data model (localStorage keys → future tables)
+
+- `patients` — as before, plus `photo`, `updatedAt`.
+- `visits` — `{ id, patientId, clinicId, date, time, source: appointment | walk-in | emergency, status, createdAt, checkedInAt, inConsultationAt, doneAt }`.
+- Status flow: `scheduled → checked-in → in-consultation → done` (`scheduled → cancelled` allowed in the data layer; no UI yet).
+- Clinics are a config list in `emr-data.js` (placeholders: General OPD 40, Paediatrics 25, Antenatal 20, Dental 15, Eye 15, Emergency no cap).
+
+### Rules chosen (confirm or change)
+
+| # | Rule |
+|---|---|
+| R1 | Capacity = visits per day, counting every non-cancelled visit (scheduled, waiting, with doctor, done). |
+| R2 | Full clinics can't be selected — for walk-ins and bookings alike. Enforced in the data layer, not just the UI. Emergency clinic has no cap. |
+| R3 | "New" = patient has no earlier non-cancelled visit to **that clinic**. |
+| R4 | Queue order: with doctor → waiting (emergencies first, then by time) → not yet arrived → done. |
+| R5 | One open visit per patient per clinic per day. |
+| R6 | Only today's appointments can be checked in. |
+| R7 | Walk-in / transfer visits start as "checked-in" (patient is present). |

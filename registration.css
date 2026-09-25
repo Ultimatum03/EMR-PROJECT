@@ -11,63 +11,10 @@ body {
 }
 
 
-/* SIDEBAR */
-
-.sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-
-    width: 240px;
-    height: 100vh;
-
-    background: #08294b;
-    color: white;
-
-    padding: 25px 15px;
-}
-
-.logo {
-    text-align: center;
-    margin-bottom: 35px;
-}
-
-.logo h2 {
-    font-size: 30px;
-}
-
-.logo span {
-    font-size: 11px;
-    opacity: 0.8;
-}
-
-.sidebar nav {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-}
-
-.sidebar nav a {
-    text-decoration: none;
-    color: white;
-
-    padding: 13px 15px;
-    border-radius: 8px;
-
-    font-size: 14px;
-}
-
-.sidebar nav a:hover,
-.sidebar nav a.active {
-    background: rgba(255,255,255,0.15);
-}
-
-
 /* MAIN CONTENT */
 
 .main-content {
-    margin-left: 240px;
-    min-height: 100vh;
+    min-height: 100vh; /* left offset comes from sidebar.css */
 }
 
 
@@ -574,14 +521,6 @@ th {
 
 @media (max-width: 900px) {
 
-    .sidebar {
-        width: 200px;
-    }
-
-    .main-content {
-        margin-left: 200px;
-    }
-
     .form-grid {
         grid-template-columns: 1fr;
     }
@@ -594,23 +533,6 @@ th {
 
 
 @media (max-width: 650px) {
-
-    .sidebar {
-        position: relative;
-
-        width: 100%;
-        height: auto;
-    }
-
-    .main-content {
-        margin-left: 0;
-    }
-
-    .sidebar nav {
-        flex-direction: row;
-
-        overflow-x: auto;
-    }
 
     .topbar {
         padding: 20px;
@@ -829,4 +751,139 @@ th {
     .emergency-option {
         min-height: 125px;
     }
+}
+
+/* PHOTO */
+
+.photo-field {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.photo-preview .photo-img,
+.detail-photo {
+    width: 96px;
+    height: 96px;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
+.photo-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #eef2f7;
+    color: #9aa8b8;
+}
+
+.photo-preview .photo-placeholder,
+.detail-photo.photo-placeholder {
+    font-size: 36px;
+}
+
+.photo-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.photo-upload-btn {
+    cursor: pointer;
+}
+
+.photo-hint {
+    width: 100%;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.camera-panel {
+    margin-top: 15px;
+}
+
+.camera-panel video {
+    width: 100%;
+    max-width: 360px;
+    border-radius: 10px;
+    background: #000;
+}
+
+.detail-photo {
+    margin-bottom: 16px;
+}
+
+
+/* TABLE: NAME, EMERGENCY FLAG, CLINIC */
+
+.name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.table-photo {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    font-size: 13px;
+}
+
+.emergency-flag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fee2e2;
+    color: #b91c1c;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.emergency-row td:first-child {
+    box-shadow: inset 4px 0 0 #c62828;
+}
+
+.clinic-line.muted {
+    color: #6b7280;
+}
+
+.checkin-btn {
+    margin-top: 6px;
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.visit-status {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.visit-status.status-scheduled { background: #e0ecff; color: #1d4ed8; }
+.visit-status.status-checked-in { background: #fef3c7; color: #92400e; }
+.visit-status.status-in-consultation { background: #dcfce7; color: #166534; }
+.visit-status.status-done { background: #f1f5f9; color: #475569; }
+
+.patient-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.visit-modal-card {
+    width: min(560px, 100%);
+}
+
+#patientTableBody td:first-child {
+    white-space: nowrap;
 }

@@ -6,101 +6,16 @@
 <title>EMR Dashboard</title>
 
 <link rel="stylesheet" href="dashboard.css">
+<link rel="stylesheet" href="sidebar.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
 </head>
 <body>
 
-<!-- Sidebar -->
-<div class="sidebar">
-    <div class="logo">
-        <i class="fa-solid fa-heart-pulse"></i>
-        <div>
-            <h2>PHIFET EMR</h2>
-            <p>Electronic Medical Record</p>
-        </div>
-    </div>
-
-    <button
-        class="sidebar-toggle"
-        id="sidebarToggle"
-        type="button"
-        aria-label="Collapse sidebar"
-        aria-expanded="true"
-    >
-        <i class="fa-solid fa-bars"></i>
-    </button>
-
-    <ul class="sidebar-menu">
-
-    <!-- Dashboard -->
-    <li class="active">
-        <a href="dashboard.html">
-            <i class="fa-solid fa-table-columns"></i>
-            <span>Dashboard</span>
-        </a>
-    </li>
-
-     <!-- Registrations -->
-    <li>
-        <a href="registration.html">
-            <i class="fa-solid fa-notes-medical"></i>
-            <span>Registrations</span>
-        </a>
-    </li>
-
-
-    <!-- Appointments -->
-    <li>
-        <a href="appointments.html">
-            <i class="fa-regular fa-calendar"></i>
-            <span>Appointments</span>
-        </a>
-    </li>
-
-    <!-- Services -->
-    <li>
-            <details>
-                <summary> <i class="fa-solid fa-stethoscope"></i> Services</summary>
-                    <ul>
-                        <li><a href="#">Laboratory Services</a></li>
-                        <li><a href="#">Scan</a></li>
-                        <li><a href="#">Dental services</a></li>
-                    </ul>
-            </details>
-    </li>
-
-    <!-- Wards -->
-        <li>
-                <details>
-                    <summary> <i class="fa-solid fa-bed"></i> Wards</summary>
-                    <ul>
-                        <li><a href="#">Children Wards</a></li>
-                        <li><a href="#">Female Wards</a></li>
-                        <li><a href="#">Male Wards</a></li>
-                    </ul>
-                </details>
-            </li>
-
-
-    <!-- Settings -->
-    <li>
-         <a href="setting.html">
-    <i class="fa-solid fa-gear"></i>
-    <span>Settings</span>
-</a>
-    </li>
-
-</ul>
-
-    <div class="bottom">
-        <div class="help"><i class="fa-solid fa-headset"></i><span>Need Help?</span></div>
-        <div class="hospital"><i class="fa-solid fa-hospital"></i><span>Central Hospital</span></div>
-    </div>
-</div>
+<aside id="appSidebar" data-page="dashboard"></aside>
 
 <!-- Main -->
-<div class="main">
+<div class="main app-main">
     
 <!-- Navbar -->
 <header>
@@ -207,5 +122,6 @@
 </script>
 <script src="dashboard.js"></script>
 
+<script src="sidebar.js"></script>
 </body>
-</html>
+</html>

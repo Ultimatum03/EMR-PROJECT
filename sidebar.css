@@ -1,0 +1,175 @@
+/* Unified sidebar (see sidebar.js). Namespaced app-* so old per-page .sidebar rules can't clash. */
+
+:root {
+    --app-sidebar-width: 270px;
+    --app-sidebar-collapsed: 90px;
+}
+
+.app-sidebar,
+.app-sidebar * {
+    box-sizing: border-box;
+}
+
+.app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 5;
+    width: var(--app-sidebar-width);
+    height: 100vh;
+    padding: 25px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    background: #08294b;
+    color: #ffffff;
+    font-family: "Segoe UI", sans-serif;
+}
+
+.app-logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.app-logo > i {
+    font-size: 40px;
+    color: #4f7cae;
+}
+
+.app-logo h2 {
+    margin: 0;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+.app-logo p {
+    margin: 2px 0 0;
+    font-size: 12px;
+    color: #cccccc;
+}
+
+.app-sidebar-toggle {
+    align-self: flex-end;
+    width: 36px;
+    height: 36px;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: transparent;
+    color: #ffffff;
+    cursor: pointer;
+}
+
+.app-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.app-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.app-nav-link i {
+    width: 18px;
+    text-align: center;
+}
+
+.app-nav-link:hover {
+    background: #14506f;
+}
+
+.app-nav-link.active {
+    background: #2a4a77;
+    font-weight: 600;
+}
+
+.app-nav-group > summary {
+    list-style: none;
+}
+
+.app-nav-group > summary::-webkit-details-marker {
+    display: none;
+}
+
+.app-nav-group > a {
+    padding-left: 49px;
+    font-size: 13px;
+}
+
+/* Page content offset. Page stylesheets add their own margins; this wins by specificity. */
+body.has-app-sidebar .app-main {
+    margin-left: var(--app-sidebar-width);
+    width: auto;
+    flex: 1;       /* fills the row on pages whose body/container is a flex row (dashboard) */
+    min-width: 0;
+}
+
+/* Collapsed */
+body.app-sidebar-collapsed .app-sidebar {
+    width: var(--app-sidebar-collapsed);
+    padding: 25px 10px;
+}
+
+body.app-sidebar-collapsed .app-logo {
+    justify-content: center;
+}
+
+body.app-sidebar-collapsed .app-logo > div,
+body.app-sidebar-collapsed .app-nav-link span,
+body.app-sidebar-collapsed .app-nav-group > a {
+    display: none;
+}
+
+body.app-sidebar-collapsed .app-sidebar-toggle {
+    align-self: center;
+}
+
+body.app-sidebar-collapsed .app-nav-link {
+    justify-content: center;
+    padding: 14px 10px;
+}
+
+body.app-sidebar-collapsed.has-app-sidebar .app-main {
+    margin-left: var(--app-sidebar-collapsed);
+}
+
+/* Narrow screens: always icon-only so content isn't covered. */
+@media (max-width: 650px) {
+    .app-sidebar {
+        width: var(--app-sidebar-collapsed);
+        padding: 25px 10px;
+    }
+
+    .app-logo > div,
+    .app-nav-link span,
+    .app-nav-group > a,
+    .app-sidebar-toggle {
+        display: none;
+    }
+
+    .app-logo {
+        justify-content: center;
+    }
+
+    .app-nav-link {
+        justify-content: center;
+        padding: 14px 10px;
+    }
+
+    body.has-app-sidebar .app-main {
+        margin-left: var(--app-sidebar-collapsed);
+    }
+}

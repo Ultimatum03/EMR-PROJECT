@@ -8,30 +8,13 @@
     <title>Appointments</title>
 
     <link rel="stylesheet" href="appointment.css">
+<link rel="stylesheet" href="sidebar.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 </head>
 <body>
-    <aside class="sidebar">
-        <div>
-            <div class="logo">
-                <i class="fa-solid fa-heart-pulse"></i>
-                <div>
-                    <h2>Nobless EMR</h2>
-                    <p>Electronic Medical Record</p>
-                </div>
-            </div>
+    <aside id="appSidebar" data-page="appointment"></aside>
 
-            <nav class="sidebar-menu">
-                <a href="dashboard.html"><i class="fa-solid fa-table-columns"></i> Dashboard</a>
-                <a href="registration.html"><i class="fa-solid fa-notes-medical"></i> Registrations</a>
-                <a class="active" href="appointment.html"><i class="fa-regular fa-calendar"></i> Appointments</a>
-            </nav>
-        </div>
-
-        <div class="hospital"><i class="fa-solid fa-hospital"></i> Central Hospital</div>
-    </aside>
-
-    <div class="main-content">
+    <div class="main-content app-main">
     <a class="back-link" href="dashboard.html">&larr; Return to Dashboard</a>
 
     <section class="appointment-box">
@@ -75,6 +58,7 @@
     </div>
     </section>
     </div>
+<script src="sidebar.js"></script>
 </body>
 
-</html>
+</html>
