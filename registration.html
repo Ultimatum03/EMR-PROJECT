@@ -31,38 +31,7 @@
                 <p>Register and manage hospital patients</p>
             </div>
 
-            <div class="user-area">
-                <span>Taryn</span>
-                <div class="user-avatar">T</div>
-            </div>
-
-        </header>
-
-
-        <!-- PAGE CONTENT -->
-        <section class="registration-container">
-
-            <!-- KPI CARDS -->
-            <div class="kpi-cards">
-                <div class="kpi-card">
-                    <p>Registered Today</p>
-                    <h2 id="kpiRegisteredToday">0</h2>
-                    <span>New registrations today</span>
-                </div>
-                <div class="kpi-card">
-                    <p>Appointments Today</p>
-                    <h2 id="kpiAppointments">0</h2>
-                    <span>Booked appointments for today</span>
-                </div>
-                <div class="kpi-card kpi-emergency">
-                    <p>Emergency Today</p>
-                    <h2 id="kpiEmergencyToday">0</h2>
-                    <span>Identified emergency registrations</span>
-                </div>
-            </div>
-
-            <!-- PAGE ACTIONS -->
-            <div class="page-actions">
+            <div class="topbar-right">
 
                 <button class="primary-btn" onclick="showPatientSearch()">
                     + New Patient
@@ -72,6 +41,52 @@
                     <span>⚠</span> Emergency Patient
                 </button>
 
+                <div class="user-area">
+                    <span>Taryn</span>
+                    <div class="user-avatar">T</div>
+                </div>
+
+            </div>
+
+        </header>
+
+
+        <!-- PAGE CONTENT -->
+        <section class="registration-container">
+
+            <!-- KPI CARDS (click to show the list below) -->
+            <div class="kpi-cards">
+                <button type="button" class="kpi-card" data-kpi="registered" aria-expanded="false" aria-controls="kpiPanel">
+                    <span class="kpi-label">Registered Today</span>
+                    <span class="kpi-value" id="kpiRegisteredToday">0</span>
+                    <span class="kpi-sub">New registrations today</span>
+                </button>
+                <button type="button" class="kpi-card" data-kpi="appointments" aria-expanded="false" aria-controls="kpiPanel">
+                    <span class="kpi-label">Appointments Today</span>
+                    <span class="kpi-value" id="kpiAppointments">0</span>
+                    <span class="kpi-sub">Booked appointments for today</span>
+                </button>
+                <button type="button" class="kpi-card kpi-emergency" data-kpi="emergency" aria-expanded="false" aria-controls="kpiPanel">
+                    <span class="kpi-label">Emergency Today</span>
+                    <span class="kpi-value" id="kpiEmergencyToday">0</span>
+                    <span class="kpi-sub">Identified emergency registrations</span>
+                </button>
+            </div>
+
+            <!-- KPI LIST -->
+            <div id="kpiPanel" class="card hidden" role="region" aria-labelledby="kpiPanelTitle">
+                <div class="card-header">
+                    <div>
+                        <h2 id="kpiPanelTitle"></h2>
+                        <p id="kpiPanelSubtitle"></p>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead><tr id="kpiPanelHead"></tr></thead>
+                        <tbody id="kpiPanelBody"></tbody>
+                    </table>
+                </div>
             </div>
 
             <div

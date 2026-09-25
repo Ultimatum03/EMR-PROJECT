@@ -408,11 +408,13 @@ function updateKpis() {
         });
     } catch (err) {
         registered.textContent = emergency.textContent = appointments.textContent = "—";
+        renderKpiPanel();
         return;
     }
     registered.textContent = today.length;
     emergency.textContent = today.filter(function(p) { return p.patientType === "Emergency"; }).length;
     appointments.textContent = appts.length;
+    renderKpiPanel(); // keep an open KPI list in step with the counts
 }
 
 // Keep this page in sync when another tab (e.g. the queue) changes data.
@@ -797,31 +799,7 @@ function displayPatients(patients, expandFirst = false) {
     // Built with textContent — stored values are never parsed as HTML.
     patients.forEach(function(patient, index) {
 
-        const row = document.createElement("tr");
-        const isEmergency = patient.patientType === "Emergency";
-        if (isEmergency) row.classList.add("emergency-row");
-
-        const idCell = document.createElement("td");
-        idCell.textContent = patient.id;
-        row.appendChild(idCell);
-
-        const nameCell = document.createElement("td");
-        const nameWrap = document.createElement("div");
-        nameWrap.className = "name-cell";
-        const name = document.createElement("span");
-        name.textContent = patient.firstName + " " + patient.lastName;
-        nameWrap.append(photoElement(patient, "table-photo"), name);
-        if (isEmergency) nameWrap.appendChild(EMR.emergencyFlag());
-        nameCell.appendChild(nameWrap);
-        row.appendChild(nameCell);
-
-        [patient.gender, patient.dateOfBirth, patient.phone].forEach(function(value) {
-            const td = document.createElement("td");
-            td.textContent = value;
-            row.appendChild(td);
-        });
-
-        row.appendChild(clinicCell(patient, visits));
+        const row = patientRow(patient, clinicCell(patient, visits));
 
         const detailId = "detail-" + index;
 
@@ -866,6 +844,156 @@ function displayPatients(patients, expandFirst = false) {
 }
 
 
+// SHARED ROW: ID, name (photo + emergency flag), gender, DOB, phone, then one caller-supplied cell.
+// Used by Patient Records and the KPI lists. textContent only.
+function patientRow(patient, sixthCell) {
+    const row = document.createElement("tr");
+    const isEmergency = patient.patientType === "Emergency";
+    if (isEmergency) row.classList.add("emergency-row");
+
+    const idCell = document.createElement("td");
+    idCell.textContent = patient.id;
+    row.appendChild(idCell);
+
+    const nameCell = document.createElement("td");
+    const nameWrap = document.createElement("div");
+    nameWrap.className = "name-cell";
+    const name = document.createElement("span");
+    name.textContent = patient.firstName + " " + patient.lastName;
+    nameWrap.append(photoElement(patient, "table-photo"), name);
+    if (isEmergency) nameWrap.appendChild(EMR.emergencyFlag());
+    nameCell.appendChild(nameWrap);
+    row.appendChild(nameCell);
+
+    [patient.gender, patient.dateOfBirth, patient.phone].forEach(function(value) {
+        const td = document.createElement("td");
+        td.textContent = value;
+        row.appendChild(td);
+    });
+
+    row.appendChild(sixthCell);
+    return row;
+}
+
+
+// KPI LISTS — click a card to show its list below the cards (one at a time).
+
+const kpiPanel = document.getElementById("kpiPanel");
+const kpiPanelHead = document.getElementById("kpiPanelHead");
+const kpiPanelBody = document.getElementById("kpiPanelBody");
+let activeKpi = null;
+
+const KPI_LISTS = {
+    registered: { title: "Registered Today", subtitle: "Patients registered today", sixth: "Clinic / Appointment", empty: "No patients registered today." },
+    emergency: { title: "Emergency Today", subtitle: "Identified emergency patients registered today", sixth: "Clinic / Appointment", empty: "No emergency registrations today." },
+    appointments: { title: "Appointments Today", subtitle: "Booked appointments for today", sixth: "Appointment", empty: "No appointments booked for today." }
+};
+
+function toggleKpi(key) {
+    activeKpi = activeKpi === key ? null : key;
+    document.querySelectorAll(".kpi-card").forEach(function(card) {
+        const on = card.dataset.kpi === activeKpi;
+        card.classList.toggle("active", on);
+        card.setAttribute("aria-expanded", String(on));
+    });
+    renderKpiPanel();
+}
+
+document.querySelectorAll(".kpi-card").forEach(function(card) {
+    card.addEventListener("click", function() { toggleKpi(card.dataset.kpi); });
+});
+
+function kpiMessageRow(text) {
+    const td = document.createElement("td");
+    td.colSpan = 7;
+    td.className = "empty-state";
+    td.textContent = text;
+    const tr = document.createElement("tr");
+    tr.appendChild(td);
+    return tr;
+}
+
+function renderKpiPanel() {
+    kpiPanel.classList.toggle("hidden", !activeKpi);
+    if (!activeKpi) return;
+    const config = KPI_LISTS[activeKpi];
+    document.getElementById("kpiPanelTitle").textContent = config.title;
+    document.getElementById("kpiPanelSubtitle").textContent = config.subtitle;
+    kpiPanelHead.replaceChildren();
+    ["Patient ID", "Name", "Gender", "Date of Birth", "Phone", config.sixth, "Actions"].forEach(function(label) {
+        const th = document.createElement("th");
+        th.textContent = label;
+        kpiPanelHead.appendChild(th);
+    });
+
+    let patients, visits;
+    try {
+        patients = getStoredPatients();
+        visits = EMR.getVisits();
+    } catch (err) {
+        kpiPanelBody.replaceChildren(kpiMessageRow("Could not read patient or visit records."));
+        return;
+    }
+    const today = todayLocal();
+    const rows = [];
+
+    if (activeKpi === "appointments") {
+        const byId = {};
+        patients.forEach(function(p) { byId[p.id] = p; });
+        visits.filter(function(v) {
+            return v.date === today && v.source === "appointment" && v.status !== "cancelled";
+        }).sort(function(a, b) { return a.time.localeCompare(b.time); }).forEach(function(v) {
+            const patient = byId[v.patientId];
+            if (!patient) return;
+            const clinic = EMR.clinic(v.clinicId);
+            const apptCell = document.createElement("td");
+            const line = document.createElement("div");
+            line.textContent = (clinic ? clinic.name : "Unknown clinic") + " · " + v.time + " · ";
+            const badge = document.createElement("span");
+            badge.className = "visit-status status-" + v.status;
+            badge.textContent = EMR.STATUS_LABELS[v.status] || v.status;
+            line.appendChild(badge);
+            apptCell.appendChild(line);
+
+            const actions = [];
+            if (v.status === "scheduled") actions.push(actionButton("Check in", "primary-btn", function() { checkIn(v.id); }));
+            actions.push(actionButton("Book Appointment", "secondary-btn", function() { openVisitModal(patient.id, "book"); }));
+            rows.push(withActions(patientRow(patient, apptCell), actions));
+        });
+    } else {
+        patients.filter(function(p) {
+            return p.registeredAt && localDateKey(new Date(p.registeredAt)) === today &&
+                (activeKpi !== "emergency" || p.patientType === "Emergency");
+        }).forEach(function(patient) {
+            rows.push(withActions(patientRow(patient, clinicCell(patient, visits)), [
+                actionButton("Book Appointment", "secondary-btn", function() { openVisitModal(patient.id, "book"); }),
+                actionButton("Send to Clinic", "primary-btn", function() { openVisitModal(patient.id, "transfer"); })
+            ]));
+        });
+    }
+
+    kpiPanelBody.replaceChildren.apply(kpiPanelBody, rows.length ? rows : [kpiMessageRow(config.empty)]);
+}
+
+function withActions(row, buttons) {
+    const td = document.createElement("td");
+    const wrap = document.createElement("div");
+    wrap.className = "kpi-actions";
+    buttons.forEach(function(b) { wrap.appendChild(b); });
+    td.appendChild(wrap);
+    row.appendChild(td);
+    return row;
+}
+
+function checkIn(visitId) {
+    let error;
+    try { error = EMR.setVisitStatus(visitId, "checked-in"); } catch (err) { error = "Could not save check-in."; }
+    if (error) return alert(error);
+    updateKpis();
+    if (!patientRecords.classList.contains("hidden")) loadPatients();
+}
+
+
 // CLINIC / APPOINTMENT COLUMN
 
 function clinicCell(patient, visits) {
@@ -887,12 +1015,7 @@ function clinicCell(patient, visits) {
 
     if (summary.kind === "today" && v.status === "scheduled") {
         line.textContent = "Appointment today · " + clinicName + " · " + v.time;
-        const btn = actionButton("Check in", "primary-btn checkin-btn", function() {
-            let error;
-            try { error = EMR.setVisitStatus(v.id, "checked-in"); } catch (err) { error = "Could not save check-in."; }
-            if (error) return alert(error);
-            loadPatients();
-        });
+        const btn = actionButton("Check in", "primary-btn checkin-btn", function() { checkIn(v.id); });
         td.append(line, btn);
     } else if (summary.kind === "today") {
         line.textContent = clinicName + " · ";

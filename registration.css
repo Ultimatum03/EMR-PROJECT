@@ -76,10 +76,14 @@ body {
 
 /* ACTIONS */
 
-.page-actions {
+.topbar-right {
     display: flex;
+    align-items: center;
     gap: 12px;
-    margin-bottom: 25px;
+}
+
+.topbar-right .user-area {
+    margin-left: 12px;
 }
 
 button {
@@ -455,30 +459,69 @@ th {
 }
 
 .kpi-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
     background: white;
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    border: 2px solid transparent;
     border-left: 4px solid #123c69;
+    color: inherit;
+    text-align: left;
+    transition: box-shadow 0.2s, border-color 0.2s;
 }
 
-.kpi-card p {
+.kpi-card:hover {
+    box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+}
+
+.kpi-card:focus-visible {
+    outline: 3px solid rgba(18, 60, 105, 0.35);
+    outline-offset: 2px;
+}
+
+.kpi-card.active {
+    border-color: #123c69;
+    background: #f5f8fc;
+}
+
+.kpi-label {
     font-size: 13px;
     color: #6b7280;
 }
 
-.kpi-card h2 {
+.kpi-value {
     font-size: 28px;
+    font-weight: 700;
     margin: 6px 0;
 }
 
-.kpi-card span {
+.kpi-sub {
     font-size: 12px;
     color: #9ca3af;
 }
 
 .kpi-card.kpi-emergency {
     border-left-color: #c62828;
+}
+
+.kpi-card.kpi-emergency.active {
+    border-color: #c62828;
+    background: #fff7f7;
+}
+
+.kpi-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.kpi-actions button {
+    padding: 6px 12px;
+    font-size: 12px;
 }
 
 
@@ -546,8 +589,8 @@ th {
         padding: 15px;
     }
 
-    .page-actions {
-        flex-direction: column;
+    .topbar-right {
+        flex-wrap: wrap;
     }
 
     .card-header {
@@ -884,6 +927,7 @@ th {
     width: min(560px, 100%);
 }
 
-#patientTableBody td:first-child {
+#patientTableBody td:first-child,
+#kpiPanelBody td:first-child {
     white-space: nowrap;
 }
