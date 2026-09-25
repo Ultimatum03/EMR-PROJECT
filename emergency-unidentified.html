@@ -651,29 +651,43 @@ function renderUnidentifiedRecords(targetId = "unidentifiedRecordsList") {
                     <th>Action</th>
                 </tr>
             </thead>
-            <tbody>
-                ${records.map(function (record, index) {
-                    const name = record.temporaryName || "Unknown Patient";
-                    const sex = record.sex || "Unknown";
-                    const age = record.estimatedAge || "Age unknown";
-                    const date = record.arrivalDate || "Date pending";
-                    const triage = record.triageCategory || "Pending";
-
-                    return `
-                        <tr>
-                            <td>${name}</td>
-                            <td>${sex}</td>
-                            <td>${age}</td>
-                            <td>${date}</td>
-                            <td>${triage}</td>
-                            <td><span class="record-badge">Emergency</span></td>
-                            <td><button type="button" class="record-action-btn" data-index="${index}">View</button></td>
-                        </tr>
-                    `;
-                }).join("")}
-            </tbody>
+            <tbody></tbody>
         </table>
     `;
+
+    // Rows built with textContent — stored values are never parsed as HTML.
+    const tbody = list.querySelector("tbody");
+    records.forEach(function (record, index) {
+        const row = document.createElement("tr");
+        [
+            record.temporaryName || "Unknown Patient",
+            record.sex || "Unknown",
+            record.estimatedAge || "Age unknown",
+            record.arrivalDate || "Date pending",
+            record.triageCategory || "Pending"
+        ].forEach(function (value) {
+            const td = document.createElement("td");
+            td.textContent = value;
+            row.appendChild(td);
+        });
+
+        const statusCell = document.createElement("td");
+        const badge = document.createElement("span");
+        badge.className = "record-badge";
+        badge.textContent = "Emergency";
+        statusCell.appendChild(badge);
+
+        const actionCell = document.createElement("td");
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "record-action-btn";
+        button.setAttribute("data-index", String(index));
+        button.textContent = "View";
+        actionCell.appendChild(button);
+
+        row.append(statusCell, actionCell);
+        tbody.appendChild(row);
+    });
 
     list.querySelectorAll(".record-action-btn").forEach(function (button) {
         button.addEventListener("click", function () {
