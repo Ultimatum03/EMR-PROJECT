@@ -6,6 +6,7 @@ CREATE TABLE patients (
     patient_id INT PRIMARY KEY,
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
+    other_name VARCHAR(50) NOT NULL,
     date_of_birth DATE NOT NULL,
     gender VARCHAR(10) NOT NULL,
     address TEXT NOT NULL,
