@@ -16,7 +16,7 @@
             { label: "Settings", href: "setting.html", icon: "fa-solid fa-gear" }],
         registration: [DASHBOARD, { label: "Register Patient", href: "registration.html", icon: "fa-solid fa-user-plus" },
             RECORDS, QUEUE],
-        queue: [DASHBOARD, QUEUE, RECORDS, REGISTRATION],
+        queue: [DASHBOARD, REGISTRATION, RECORDS, QUEUE],
         appointment: [DASHBOARD, APPOINTMENTS, QUEUE],
         "emergency-unidentified": [DASHBOARD, REGISTRATION],
         "emergency-complete": [DASHBOARD, REGISTRATION, { label: "Emergency Record", href: "emergency-complete.html", icon: "fa-solid fa-file-medical" }]
