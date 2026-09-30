@@ -1,23 +1,111 @@
-/* Clinics page extras. Tables, clinic cards and status badges come from queue.css; forms from nurse.css. */
+/* Clinics page. Modelled on queue.css and uses the same theme.css tokens (light + dark).
+   Clinic-card tones and the queue table come from queue.css; everything else the page needs is here,
+   scoped under .cl-page / .cl-modal so it works even when other page stylesheets change. */
+
+.cl-page,
+.cl-modal {
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: var(--text, #172b40);
+}
+
+.cl-page button,
+.cl-page input,
+.cl-page select,
+.cl-page textarea,
+.cl-modal button,
+.cl-modal input,
+.cl-modal select,
+.cl-modal textarea {
+    font-family: inherit;
+}
+
+.hidden { display: none !important; }
+body.modal-open { overflow: hidden; }
+
+.cl-page {
+    padding: 30px 26px 40px 30px;
+}
+
+/* ---------- Headings and messages ---------- */
+
+.cl-page .page-heading { margin-bottom: 24px; }
+
+.cl-page .page-heading h1 {
+    margin-bottom: 6px;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-strong, #123c69);
+}
+
+.cl-page .page-heading p {
+    color: var(--muted, #6b7280);
+    font-size: 16px;
+}
 
 #clinicMsg:empty { display: none; }
 #clinicMsg { margin: 0 0 16px; }
 
-a.clinic-card { text-decoration: none; }
+.cl-page .search-status {
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.cl-page .search-status.error {
+    background: #fde8e8;
+    color: #c81e1e;
+}
+
+:root[data-theme="dark"] .cl-page .search-status.error {
+    background: #4a1d1f;
+    color: #fca5a5;
+}
 
 .cl-back {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     margin-bottom: 14px;
-    color: var(--accent);
+    color: var(--accent, #1d5fd6);
+    font-size: 15px;
     font-weight: 600;
     text-decoration: none;
 }
 
+.cl-back:hover { text-decoration: underline; }
+
+/* ---------- Clinic picker cards (built on queue.css .clinic-card) ---------- */
+
+.cl-page .clinic-cards {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+a.clinic-card {
+    min-width: 0;
+    text-decoration: none;
+}
+
+a.clinic-card:focus-visible {
+    outline: 2px solid var(--accent, #1d5fd6);
+    outline-offset: 2px;
+}
+
+.cl-page .clinic-card { padding: 18px; }
+
+.cl-page .clinic-card-name {
+    font-size: 17px;
+    overflow-wrap: anywhere;
+}
+
+.cl-page .clinic-card-count { font-size: 14px; }
+.cl-page .clinic-card-count strong { font-size: 20px; }
+.cl-page .clinic-card-chevron { flex: 0 0 auto; }
+
+/* ---------- Section cards ---------- */
+
 .cl-card {
     margin-bottom: 22px;
-    padding: 22px 26px 26px;
+    padding: 0 26px 26px;
     border-radius: 12px;
     background: var(--surface);
     box-shadow: var(--shadow);
@@ -27,12 +115,80 @@ a.clinic-card { text-decoration: none; }
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 18px;
+    gap: 16px;
+    margin: 0 -26px 20px;
+    padding: 20px 26px;
+    border-bottom: 1px solid var(--border);
 }
 
-.cl-card-head h2 { font-size: 20px; color: var(--text-strong); }
-.cl-card-head p { margin-top: 4px; color: var(--muted); font-size: 14px; }
+.cl-card-head h2 {
+    margin-bottom: 4px;
+    font-size: 20px;
+    color: var(--text-strong);
+}
+
+.cl-card-head p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* ---------- Buttons ---------- */
+
+.cl-page .primary-btn,
+.cl-modal .primary-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border: none;
+    border-radius: 6px;
+    background: var(--accent, #1d5fd6);
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.cl-page .primary-btn:hover,
+.cl-modal .primary-btn:hover { filter: brightness(0.92); }
+
+.cl-modal .nurse-cancel {
+    padding: 11px 20px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cl-modal .nurse-cancel:hover { background: var(--surface-3, var(--surface-2)); }
+
+.cl-icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cl-icon-btn:hover:not(:disabled) { background: var(--accent-soft); }
+.cl-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cl-icon-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.cl-actions { display: flex; gap: 8px; }
+
+/* ---------- Doctors ---------- */
 
 .cl-doctors {
     display: grid;
@@ -52,40 +208,50 @@ a.clinic-card { text-decoration: none; }
 
 .cl-doctor-avatar {
     display: inline-flex;
-    flex: 0 0 40px;
+    flex: 0 0 44px;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--accent-soft);
     color: var(--accent);
+    font-size: 18px;
 }
 
 .cl-doctor-text { flex: 1; min-width: 0; }
-.cl-doctor-text strong { display: block; color: var(--text-strong); overflow-wrap: anywhere; }
+
+.cl-doctor-text strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-strong);
+    overflow-wrap: anywhere;
+}
+
 .cl-doctor-text small { color: var(--muted); font-size: 13px; }
 
-.cl-none { color: var(--muted); }
+.cl-remove {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-color: transparent;
+    background: transparent;
+    color: var(--muted);
+}
+
+.cl-none { color: var(--muted); font-size: 15px; }
 .cl-off { margin-top: 18px; }
 .cl-off summary { margin-bottom: 12px; color: var(--muted); font-size: 14px; cursor: pointer; }
 
-.cl-actions { display: flex; gap: 8px; }
+/* ---------- Tables (base styles come from queue.css) ---------- */
 
-.cl-icon-btn {
-    width: 38px;
-    height: 38px;
-    border: 1px solid var(--border-strong);
-    border-radius: 8px;
-    background: var(--surface);
-    color: var(--accent);
-    font-size: 16px;
-    cursor: pointer;
-}
+.cl-card .queue-table th { padding: 14px 16px; font-size: 15px; }
+.cl-card .queue-table td { padding: 14px 16px; }
 
-.cl-icon-btn:hover:not(:disabled) { background: var(--accent-soft); }
-.cl-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-.cl-remove { flex: 0 0 38px; width: 32px; height: 32px; color: var(--muted); }
+.cl-empty td { padding: 26px 16px; color: var(--muted); text-align: center; }
+.cl-empty:hover td { background: transparent; }
 
 .visit-tag {
     display: inline-block;
@@ -101,24 +267,7 @@ a.clinic-card { text-decoration: none; }
 :root[data-theme="dark"] .visit-new { background: #14532d; color: #86efac; }
 :root[data-theme="dark"] .visit-followup { background: #1e3a6b; color: #93c5fd; }
 
-.cl-empty td { padding: 22px 16px; color: var(--muted); text-align: center; }
-
-.cl-days { display: flex; flex-wrap: wrap; gap: 14px; }
-.cl-day { display: inline-flex; align-items: center; gap: 4px; font-weight: 400; }
-
-.cl-history-title { margin: 22px 0 8px; color: var(--text-strong); }
-.cl-history { list-style: none; }
-.cl-history li { padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px; }
-
-@media (max-width: 700px) {
-    .cl-card { padding: 18px; }
-    .cl-card-head { flex-wrap: wrap; }
-}
-
-/* Page padding and modal shell (self-contained so it works even if the shared modal styles differ). */
-.hidden { display: none !important; }
-body.modal-open { overflow: hidden; }
-.cl-page { padding: 28px 35px 40px; }
+/* ---------- Modal ---------- */
 
 .cl-modal {
     position: fixed;
@@ -138,7 +287,7 @@ body.modal-open { overflow: hidden; }
     padding: 24px 26px;
     border-radius: 12px;
     background: var(--surface);
-    box-shadow: var(--shadow);
+    box-shadow: 0 20px 50px rgba(8, 25, 48, 0.3);
 }
 
 .cl-modal-head {
@@ -146,8 +295,394 @@ body.modal-open { overflow: hidden; }
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    margin-bottom: 16px;
+    margin-bottom: 18px;
 }
 
-.cl-modal-head h3 { font-size: 19px; color: var(--text-strong); }
+.cl-modal-head h3 { font-size: 20px; color: var(--text-strong); }
 .cl-modal-head p { margin-top: 4px; color: var(--muted); font-size: 14px; }
+
+/* ---------- Forms (triage, transfer, add doctor) ---------- */
+
+.cl-modal form { display: block; }
+
+.cl-modal .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.cl-modal .nurse-note-field { grid-column: 1 / -1; }
+
+.cl-modal .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.cl-modal .form-grid .form-group { margin-bottom: 0; }
+
+.cl-modal .form-group > label {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-strong);
+}
+
+.cl-modal input[type="text"],
+.cl-modal select,
+.cl-modal textarea {
+    width: 100%;
+    padding: 11px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+}
+
+.cl-modal input[type="text"]:focus,
+.cl-modal select:focus,
+.cl-modal textarea:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: 0;
+    border-color: var(--accent);
+}
+
+.cl-modal .nurse-form-error { min-height: 20px; margin: 4px 0 8px; color: #c81e1e; font-size: 14px; }
+:root[data-theme="dark"] .cl-modal .nurse-form-error { color: #fca5a5; }
+
+.cl-modal .nurse-form-actions { display: flex; justify-content: flex-end; gap: 10px; }
+
+.cl-days { display: flex; flex-wrap: wrap; gap: 8px 16px; }
+.cl-day { display: inline-flex; align-items: center; gap: 6px; font-size: 15px; font-weight: 400; cursor: pointer; }
+.cl-day input { width: 16px; height: 16px; accent-color: var(--accent); }
+
+.cl-history-title { margin: 22px 0 8px; color: var(--text-strong); }
+.cl-history { list-style: none; }
+.cl-history li { padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 700px) {
+    .cl-page { padding: 20px 16px 32px; }
+    .cl-card { padding: 0 16px 18px; }
+    .cl-card-head { flex-wrap: wrap; margin: 0 -16px 16px; padding: 16px; }
+    .cl-page .page-heading h1 { font-size: 24px; }
+    .cl-modal .form-grid { grid-template-columns: 1fr; }
+}
+
+/* =====================================================================
+   Clinic landing redesign: header card, stat cards, tabbed queue table,
+   row-actions menu and the "Doctors in clinic" side panel.
+   ===================================================================== */
+
+.cl-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 22px;
+    align-items: start;
+}
+
+.cl-main { min-width: 0; display: flex; flex-direction: column; gap: 20px; }
+
+/* ---------- Header card ---------- */
+
+.cl-hero {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 20px 24px;
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.cl-hero-icon {
+    display: inline-flex;
+    flex: 0 0 64px;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 26px;
+}
+
+.cl-hero-text { min-width: 0; }
+
+.cl-hero-text h1 {
+    margin-bottom: 4px;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--text-strong);
+    overflow-wrap: anywhere;
+}
+
+.cl-hero-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px 0;
+    color: var(--muted);
+    font-size: 15px;
+}
+
+.cl-hero-meta span + span::before {
+    content: "•";
+    margin: 0 10px;
+    opacity: 0.7;
+}
+
+/* ---------- Stat cards ---------- */
+
+.cl-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 16px;
+}
+
+.cl-stat {
+    --tone-bg: #eef4ff;
+    --tone-border: #d6e4fb;
+    --tone-icon-bg: #dbe8fd;
+    --tone-fg: #1d5fd6;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border: 1px solid var(--tone-border);
+    border-radius: 12px;
+    background: var(--tone-bg);
+}
+
+.cl-stat.tone-amber  { --tone-bg: #fff8e8; --tone-border: #fbe6b3; --tone-icon-bg: #fdecc2; --tone-fg: #b7791f; }
+.cl-stat.tone-green  { --tone-bg: #eefaf1; --tone-border: #cdeed8; --tone-icon-bg: #d6f3e0; --tone-fg: #1f9d55; }
+.cl-stat.tone-purple { --tone-bg: #f3effd; --tone-border: #ded4f7; --tone-icon-bg: #e6dcfa; --tone-fg: #6d3fc4; }
+
+:root[data-theme="dark"] .cl-stat            { --tone-bg: #16263d; --tone-border: #24406a; --tone-icon-bg: #1e3a6b; --tone-fg: #93c5fd; }
+:root[data-theme="dark"] .cl-stat.tone-amber  { --tone-bg: #2e2714; --tone-border: #5b4a1c; --tone-icon-bg: #4a3c16; --tone-fg: #fcd34d; }
+:root[data-theme="dark"] .cl-stat.tone-green  { --tone-bg: #14291e; --tone-border: #1f5137; --tone-icon-bg: #14532d; --tone-fg: #86efac; }
+:root[data-theme="dark"] .cl-stat.tone-purple { --tone-bg: #221a38; --tone-border: #4a3b7a; --tone-icon-bg: #3b2d66; --tone-fg: #c4b5fd; }
+
+.cl-stat-icon {
+    display: inline-flex;
+    flex: 0 0 46px;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--tone-icon-bg);
+    color: var(--tone-fg);
+    font-size: 19px;
+}
+
+.cl-stat-text { display: flex; flex-direction: column; min-width: 0; }
+.cl-stat-label { color: var(--tone-fg); font-size: 14px; font-weight: 500; }
+.cl-stat-value { font-size: 28px; line-height: 1.15; font-weight: 700; color: var(--text-strong); }
+
+/* ---------- Queue card ---------- */
+
+.cl-queue {
+    min-width: 0;
+    padding: 0 24px 22px;
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.cl-queue-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+    margin: 0 -24px 18px;
+    padding: 0 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.cl-tabs { display: flex; gap: 6px; }
+
+.cl-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: -1px;
+    padding: 18px 10px 16px;
+    border: none;
+    border-bottom: 3px solid transparent;
+    background: transparent;
+    color: var(--muted);
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cl-tab:hover { color: var(--text-strong); }
+.cl-tab.is-active { color: var(--text-strong); border-bottom-color: var(--accent); }
+.cl-tab:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 6px; }
+
+.cl-tab-count {
+    min-width: 24px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: center;
+}
+
+.cl-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: min(320px, 100%);
+    margin-bottom: 4px;
+    padding: 0 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--muted);
+}
+
+.cl-search:focus-within { border-color: var(--accent); outline: 2px solid var(--accent); outline-offset: 0; }
+
+.cl-search-input {
+    flex: 1;
+    min-width: 0;
+    padding: 11px 0;
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 15px;
+}
+
+.cl-queue .queue-table th { padding: 14px 16px; font-size: 15px; }
+.cl-queue .queue-table td { padding: 14px 16px; }
+
+/* ---------- Row actions ("...") and its menu ---------- */
+
+.cl-more {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 32px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface-2, var(--surface));
+    color: var(--text);
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.cl-more:hover { background: var(--accent-soft); }
+.cl-more:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.cl-menu {
+    position: fixed;
+    z-index: 60;
+    min-width: 220px;
+    padding: 6px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    box-shadow: 0 12px 32px rgba(8, 25, 48, 0.2);
+    font-family: "Segoe UI", system-ui, sans-serif;
+}
+
+.cl-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 14px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.cl-menu-item i { width: 16px; text-align: center; color: var(--muted); }
+.cl-menu-item:hover:not(:disabled),
+.cl-menu-item:focus-visible { background: var(--accent-soft); outline: none; }
+.cl-menu-item.is-primary:not(:disabled) { background: var(--accent); color: #ffffff; }
+.cl-menu-item.is-primary:not(:disabled) i { color: #ffffff; }
+.cl-menu-item.is-primary:not(:disabled):hover,
+.cl-menu-item.is-primary:not(:disabled):focus-visible { filter: brightness(0.92); background: var(--accent); }
+.cl-menu-item:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ---------- Doctors panel ---------- */
+
+.cl-panel {
+    position: sticky;
+    top: 20px;
+    padding: 20px 18px 18px;
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.cl-panel-head { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+
+.cl-panel-icon {
+    display: inline-flex;
+    flex: 0 0 48px;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 19px;
+}
+
+.cl-panel-head h2 { margin-bottom: 2px; font-size: 19px; color: var(--text-strong); }
+.cl-panel-head p { color: var(--muted); font-size: 14px; }
+
+.cl-doctor-list { display: flex; flex-direction: column; gap: 10px; }
+
+.cl-panel .cl-doctor { padding: 14px; background: var(--surface); gap: 12px; }
+
+.cl-dot {
+    flex: 0 0 11px;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #22a95a;
+    box-shadow: 0 0 0 3px rgba(34, 169, 90, 0.18);
+}
+
+.cl-dot.is-off { background: var(--muted); box-shadow: none; opacity: 0.6; }
+
+.cl-panel .cl-off { margin-top: 14px; }
+.cl-panel .cl-none { padding: 6px 2px 10px; }
+
+.cl-add-doctor { width: 100%; margin-top: 16px; }
+
+/* ---------- Responsive ---------- */
+
+@media (max-width: 1100px) {
+    .cl-layout { grid-template-columns: minmax(0, 1fr); }
+    .cl-panel { position: static; }
+}
+
+@media (max-width: 700px) {
+    .cl-hero { padding: 16px; gap: 14px; }
+    .cl-hero-icon { flex-basis: 52px; width: 52px; height: 52px; font-size: 22px; }
+    .cl-hero-text h1 { font-size: 22px; }
+    .cl-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .cl-queue { padding: 0 16px 16px; }
+    .cl-queue-head { margin: 0 -16px 14px; padding: 0 16px 12px; }
+    .cl-search { width: 100%; }
+}

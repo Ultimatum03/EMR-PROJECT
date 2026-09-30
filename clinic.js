@@ -161,33 +161,76 @@
         });
     }
 
-    function iconBtn(label, iconCls, enabled, whyNot, onClick) {
-        const b = el("button", "cl-icon-btn");
-        b.type = "button";
-        b.setAttribute("aria-label", label);
-        b.title = enabled ? label : label + " (unavailable: " + whyNot + ")";
-        b.disabled = !enabled;
-        b.appendChild(icon(iconCls));
-        if (enabled) b.addEventListener("click", function () { msg.textContent = ""; onClick(); });
-        return b;
+    // ---------- row actions dropdown ----------
+    // The menu lives on <body> with fixed positioning so the table's horizontal scroll never clips it.
+    let tab = "waiting";      // which table is showing
+    let search = "";          // patient search text, kept across re-renders
+    let menuEl = null;
+    let menuOwner = null;
+
+    function closeMenu() {
+        if (menuEl) menuEl.remove();
+        menuEl = null;
+        menuOwner = null;
+    }
+    document.addEventListener("click", function (event) {
+        if (menuEl && !menuEl.contains(event.target) && !event.target.closest(".cl-more")) closeMenu();
+    });
+    document.addEventListener("keydown", function (event) { if (event.key === "Escape") closeMenu(); });
+    window.addEventListener("resize", closeMenu);
+    window.addEventListener("scroll", closeMenu, true);
+
+    function menuItems(v, p) {
+        const waiting = v.status === "checked-in";
+        return [
+            { label: "Open encounter", icon: "fa-solid fa-play", ok: waiting, why: "patient is not waiting", run: function () { openEncounter(v); } },
+            { label: "Transfer", icon: "fa-solid fa-right-left", ok: v.status === "scheduled" || waiting, why: "only scheduled or waiting patients",
+              run: function () { openModal("Transfer patient", fullName(p) + " · " + v.patientId, transferForm(v)); } },
+            { label: "Triage", icon: "fa-solid fa-briefcase-medical", ok: waiting, why: "patient is not waiting",
+              run: function () { openModal("Triage: record vitals", fullName(p) + " · " + v.patientId, triageForm(v)); } },
+            { label: "View existing records", icon: "fa-solid fa-file-lines", ok: !!p, why: "patient record not found", run: function () { showRecords(p); } }
+        ];
+    }
+
+    function openMenu(btn, items) {
+        const m = el("div", "cl-menu");
+        m.setAttribute("role", "menu");
+        items.forEach(function (it, i) {
+            const b = el("button", "cl-menu-item" + (i === 0 ? " is-primary" : ""));
+            b.type = "button";
+            b.setAttribute("role", "menuitem");
+            b.disabled = !it.ok;
+            if (!it.ok) b.title = it.label + " (unavailable: " + it.why + ")";
+            b.append(icon(it.icon), el("span", "", it.label));
+            if (it.ok) b.addEventListener("click", function () { closeMenu(); msg.textContent = ""; it.run(); });
+            m.appendChild(b);
+        });
+        document.body.appendChild(m);
+        const r = btn.getBoundingClientRect();
+        const h = m.offsetHeight, w = m.offsetWidth;
+        const top = r.bottom + 6 + h > window.innerHeight ? Math.max(8, r.top - h - 6) : r.bottom + 6;
+        m.style.top = top + "px";
+        m.style.left = Math.max(8, Math.min(r.right - w, window.innerWidth - w - 8)) + "px";
+        menuEl = m;
+        menuOwner = btn;
+        const first = m.querySelector("button:not(:disabled)");
+        if (first) first.focus();
     }
 
     function actionsCell(v, p) {
-        const waiting = v.status === "checked-in";
-        const box = el("div", "cl-actions");
-        box.append(
-            iconBtn("Triage", "fa-solid fa-heart-pulse", waiting, "patient is not waiting", function () {
-                openModal("Triage: record vitals", fullName(p) + " · " + v.patientId, triageForm(v));
-            }),
-            iconBtn("Open encounter", "fa-solid fa-notes-medical", waiting, "patient is not waiting", function () { openEncounter(v); }),
-            iconBtn("Existing records", "fa-solid fa-folder-open", !!p, "patient record not found", function () { showRecords(p); }),
-            iconBtn("Transfer", "fa-solid fa-right-left", v.status === "scheduled" || waiting, "only scheduled or waiting patients", function () {
-                openModal("Transfer patient", fullName(p) + " · " + v.patientId, transferForm(v));
-            })
-        );
-        const td = el("td");
-        td.appendChild(box);
-        return td;
+        const b = el("button", "cl-more");
+        b.type = "button";
+        b.setAttribute("aria-label", "Actions for " + fullName(p));
+        b.setAttribute("aria-haspopup", "menu");
+        b.appendChild(icon("fa-solid fa-ellipsis"));
+        b.addEventListener("click", function () {
+            const wasOpen = menuOwner === b;
+            closeMenu();
+            if (!wasOpen) openMenu(b, menuItems(v, p));
+        });
+        const cell = el("td");
+        cell.appendChild(b);
+        return cell;
     }
 
     // ---------- table pieces ----------
@@ -247,24 +290,20 @@
         return wrap;
     }
 
-    function card(title, sub, body, extra) {
-        const head = el("div", "cl-card-head");
-        const titles = el("div");
-        titles.append(el("h2", "", title), el("p", "", sub));
-        head.appendChild(titles);
-        if (extra) head.appendChild(extra);
-        const c = el("section", "cl-card");
-        c.append(head, body);
-        return c;
+    function plural(n, one, many) { return n + " " + (n === 1 ? one : many); }
+
+    function doctorName(v, doctors) {
+        const d = v.doctorId ? doctors.find(function (x) { return x && x.id === v.doctorId; }) : null;
+        return d ? d.name : "—";
     }
 
-    function doctorItem(d) {
+    function doctorRow(d, onDuty) {
         const days = d.days.filter(function (n) { return Number.isInteger(n) && n >= 0 && n <= 6; })
             .map(function (n) { return CLINIC.DAY_NAMES[n]; }).join(", ");
+        const dot = el("span", "cl-dot" + (onDuty ? "" : " is-off"));
+        dot.title = onDuty ? "On duty today" : "Not on duty today";
         const text = el("div", "cl-doctor-text");
         text.append(el("strong", "", d.name), el("small", "", [typeof d.specialty === "string" ? d.specialty : "", days].filter(Boolean).join(" · ")));
-        const avatar = el("span", "cl-doctor-avatar");
-        avatar.appendChild(icon("fa-solid fa-user-doctor"));
         const remove = el("button", "cl-icon-btn cl-remove");
         remove.type = "button";
         remove.setAttribute("aria-label", "Remove " + d.name);
@@ -278,8 +317,18 @@
             render();
         });
         const item = el("div", "cl-doctor");
-        item.append(avatar, text, remove);
+        item.append(dot, text, remove);
         return item;
+    }
+
+    function statCard(tone, iconCls, label, n) {
+        const ic = el("span", "cl-stat-icon");
+        ic.appendChild(icon(iconCls));
+        const text = el("div", "cl-stat-text");
+        text.append(el("span", "cl-stat-label", label), el("strong", "cl-stat-value", String(n)));
+        const s = el("div", "cl-stat tone-" + tone);
+        s.append(ic, text);
+        return s;
     }
 
     // ---------- views ----------
@@ -313,61 +362,148 @@
         const byId = {};
         patients.forEach(function (p) { if (p) byId[p.id] = p; });
         const mine = visits.filter(function (v) { return v && v.clinicId === c.id && v.date === t && v.status !== "cancelled"; });
+        const count = function (status) { return mine.filter(function (v) { return v.status === status; }).length; };
         const appts = mine.filter(function (v) { return v.source === "appointment"; }).sort(byTime);
-        const waiting = mine.filter(function (v) { return v.status === "checked-in"; }).sort(function (a, b) {
+        const queue = mine.filter(function (v) { return v.status === "checked-in" || v.status === "in-consultation"; }).sort(function (a, b) {
             return ((b.source === "emergency") - (a.source === "emergency")) || byTime(a, b);
         });
         const all = CLINIC.forClinic(c.id, doctors);
         const on = all.filter(function (d) { return CLINIC.onDuty(d, day); });
         const off = all.filter(function (d) { return !CLINIC.onDuty(d, day); });
 
-        const wrap = el("div");
-        const back = el("a", "cl-back");
-        back.href = "#";
-        back.append(icon("fa-solid fa-arrow-left"), document.createTextNode(" All clinics"));
-        const heading = el("div", "page-heading");
-        heading.append(el("h1", "", c.name), el("p", "", CLINIC.DAY_NAMES[day] + " " + t));
+        // --- header card ---
+        const heroIcon = el("span", "cl-hero-icon");
+        heroIcon.appendChild(icon("fa-solid " + (ICONS[c.id] || "fa-hospital")));
+        const meta = el("p", "cl-hero-meta");
+        [CLINIC.DAY_NAMES[day] + " " + t, plural(count("checked-in"), "patient waiting", "patients waiting"),
+            plural(on.length, "doctor on duty", "doctors on duty")].forEach(function (s) { meta.appendChild(el("span", "", s)); });
+        const heroText = el("div", "cl-hero-text");
+        heroText.append(el("h1", "", c.name), meta);
+        const hero = el("section", "cl-hero");
+        hero.append(heroIcon, heroText);
 
-        const docBody = el("div");
-        const docGrid = el("div", "cl-doctors");
-        on.forEach(function (d) { docGrid.appendChild(doctorItem(d)); });
-        docBody.appendChild(on.length ? docGrid : el("p", "cl-none", "No doctors are on duty today."));
+        // --- stat cards ---
+        const stats = el("div", "cl-stats");
+        stats.append(
+            statCard("blue", "fa-solid fa-user-clock", "Waiting", count("checked-in")),
+            statCard("amber", "fa-solid fa-calendar-check", "Scheduled", count("scheduled")),
+            statCard("green", "fa-solid fa-user-doctor", "With doctor", count("in-consultation")),
+            statCard("purple", "fa-solid fa-circle-check", "Completed", count("done")));
+
+        // --- queue card: tabs + search + table ---
+        const tabDefs = [{ key: "waiting", label: "Waiting list", n: queue.length }, { key: "appointments", label: "Appointments", n: appts.length }];
+        const tabBar = el("div", "cl-tabs");
+        tabBar.setAttribute("role", "tablist");
+        tabDefs.forEach(function (d) {
+            const b = el("button", "cl-tab" + (tab === d.key ? " is-active" : ""));
+            b.type = "button";
+            b.setAttribute("role", "tab");
+            b.setAttribute("aria-selected", tab === d.key ? "true" : "false");
+            b.append(document.createTextNode(d.label), el("span", "cl-tab-count", String(d.n)));
+            b.addEventListener("click", function () { tab = d.key; render(); });
+            tabBar.appendChild(b);
+        });
+
+        const input = el("input", "cl-search-input");
+        input.type = "text";
+        input.placeholder = "Search patient...";
+        input.autocomplete = "off";
+        input.maxLength = 60;
+        input.value = search;
+        input.setAttribute("aria-label", "Search patients");
+        const searchBox = el("label", "cl-search");
+        searchBox.append(icon("fa-solid fa-magnifying-glass"), input);
+
+        const head = el("div", "cl-queue-head");
+        head.append(tabBar, searchBox);
+
+        let headers, rows, emptyText;
+        if (tab === "appointments") {
+            headers = ["Time", "Patient", "Visit", "Doctor", "Status", "Actions"];
+            emptyText = "No appointments today.";
+            rows = appts.map(function (v) {
+                const p = byId[v.patientId];
+                const r = el("tr");
+                r.dataset.q = fullName(p).toLowerCase();
+                r.append(td(String(v.time)), patientCell(v, p), visitTag(v, visits), td(doctorName(v, all)), statusCell(v), actionsCell(v, p));
+                return r;
+            });
+        } else {
+            headers = ["#", "Arrived", "Patient", "Visit", "Doctor", "Status", "Actions"];
+            emptyText = "Nobody is waiting.";
+            rows = queue.map(function (v, i) {
+                const p = byId[v.patientId];
+                const r = el("tr");
+                r.dataset.q = fullName(p).toLowerCase();
+                r.append(td(String(i + 1)), td(String(v.time)), patientCell(v, p), visitTag(v, visits), td(doctorName(v, all)), statusCell(v), actionsCell(v, p));
+                return r;
+            });
+        }
+        const tableWrap = table(headers, rows, emptyText);
+        const noMatch = el("tr", "cl-empty hidden");
+        const noMatchCell = el("td", "", "No patients match your search.");
+        noMatchCell.colSpan = headers.length;
+        noMatch.appendChild(noMatchCell);
+        tableWrap.querySelector("tbody").appendChild(noMatch);
+
+        function applySearch() {
+            const q = search.trim().toLowerCase();
+            let shown = 0;
+            rows.forEach(function (r) {
+                const hit = !q || r.dataset.q.indexOf(q) !== -1;
+                r.classList.toggle("hidden", !hit);
+                if (hit) shown++;
+            });
+            noMatch.classList.toggle("hidden", !(q && rows.length && !shown));
+        }
+        input.addEventListener("input", function () { search = input.value; applySearch(); });
+        applySearch();
+
+        const queueCard = el("section", "cl-queue");
+        queueCard.append(head, tableWrap);
+
+        // --- doctors panel ---
+        const panelIcon = el("span", "cl-panel-icon");
+        panelIcon.appendChild(icon("fa-solid fa-user-doctor"));
+        const panelText = el("div");
+        panelText.append(el("h2", "", "Doctors in clinic"), el("p", "", on.length + " on duty today"));
+        const panelHead = el("div", "cl-panel-head");
+        panelHead.append(panelIcon, panelText);
+
+        const list = el("div", "cl-doctor-list");
+        on.forEach(function (d) { list.appendChild(doctorRow(d, true)); });
+        if (!on.length) list.appendChild(el("p", "cl-none", "No doctors are on duty today."));
+        const panel = el("aside", "cl-panel");
+        panel.append(panelHead, list);
         if (off.length) {
             const details = el("details", "cl-off");
             details.appendChild(el("summary", "", "Not on duty today (" + off.length + ")"));
-            const offGrid = el("div", "cl-doctors");
-            off.forEach(function (d) { offGrid.appendChild(doctorItem(d)); });
-            details.appendChild(offGrid);
-            docBody.appendChild(details);
+            const offList = el("div", "cl-doctor-list");
+            off.forEach(function (d) { offList.appendChild(doctorRow(d, false)); });
+            details.appendChild(offList);
+            panel.appendChild(details);
         }
-        const add = el("button", "primary-btn", "Add doctor");
+        const add = el("button", "primary-btn cl-add-doctor", "Add doctor");
         add.type = "button";
+        add.prepend(icon("fa-solid fa-plus"));
         add.addEventListener("click", function () { msg.textContent = ""; openModal("Add doctor", c.name, doctorForm(c)); });
+        panel.appendChild(add);
 
-        const apptRows = appts.map(function (v) {
-            const p = byId[v.patientId];
-            const r = el("tr");
-            r.append(td(String(v.time)), patientCell(v, p), visitTag(v, visits), statusCell(v), actionsCell(v, p));
-            return r;
-        });
-        const waitRows = waiting.map(function (v, i) {
-            const p = byId[v.patientId];
-            const r = el("tr");
-            r.append(td(String(i + 1)), td(String(v.time)), patientCell(v, p), visitTag(v, visits),
-                td(has(TYPES, v.source) ? TYPES[v.source] : "Unknown"), actionsCell(v, p));
-            return r;
-        });
-
-        wrap.append(back, heading,
-            card("Doctors on duty today", on.length + " on duty", docBody, add),
-            card("Appointments today", appts.length + (appts.length === 1 ? " appointment" : " appointments"),
-                table(["Time", "Patient", "Visit", "Status", "Actions"], apptRows, "No appointments today.")),
-            card("Waiting list", waiting.length + " waiting",
-                table(["#", "Arrived", "Patient", "Visit", "Type", "Actions"], waitRows, "Nobody is waiting.")));
+        // --- assemble ---
+        const back = el("a", "cl-back");
+        back.href = "#";
+        back.append(icon("fa-solid fa-arrow-left"), document.createTextNode(" All clinics"));
+        const main = el("div", "cl-main");
+        main.append(hero, stats, queueCard);
+        const layout = el("div", "cl-layout");
+        layout.append(main, panel);
+        const wrap = el("div");
+        wrap.append(back, layout);
         return wrap;
     }
 
     function render() {
+        closeMenu();
         let visits, patients, doctors;
         try {
             visits = EMR.getVisits();
@@ -390,10 +526,15 @@
         root.replaceChildren(c ? landingView(c, visits, patients, doctors) : listView(visits));
     }
 
-    window.addEventListener("hashchange", function () { closeModal(); msg.textContent = ""; render(); });
+    window.addEventListener("hashchange", function () { closeModal(); msg.textContent = ""; tab = "waiting"; search = ""; render(); });
     window.addEventListener("storage", function (event) {
         if (["visits", "patients", "vitals", "doctors"].indexOf(event.key) !== -1) render();
     });
-    setInterval(render, 30000);
+    // Skip the periodic refresh while the person is typing in search or has a row menu open.
+    setInterval(function () {
+        const a = document.activeElement;
+        if (menuEl || (a && a.classList && a.classList.contains("cl-search-input"))) return;
+        render();
+    }, 30000);
     render();
 })();
