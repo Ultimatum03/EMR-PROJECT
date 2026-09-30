@@ -19,9 +19,9 @@
         registration: [DASHBOARD, { label: "Register Patient", href: "registration.html", icon: "fa-solid fa-user-plus" },
             RECORDS,],
         queue: [DASHBOARD, QUEUE],
-        clinic: [DASHBOARD, CLINICS, QUEUE],
-        appointment: [DASHBOARD, APPOINTMENTS, QUEUE],
-        "nurse-station": [DASHBOARD, NURSE_STATION, QUEUE],
+        clinic: [DASHBOARD, CLINICS, ],
+        appointment: [DASHBOARD, APPOINTMENTS,],
+        "nurse-station": [DASHBOARD, NURSE_STATION,],
         "emergency-unidentified": [DASHBOARD, REGISTRATION],
         "emergency-complete": [DASHBOARD, REGISTRATION, { label: "Emergency Record", href: "emergency-complete.html", icon: "fa-solid fa-file-medical" }]
     };
