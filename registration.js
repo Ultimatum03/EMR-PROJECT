@@ -29,7 +29,7 @@ function getStoredPatients() {
 
 // Form fields saved on a patient record (shared by register + edit).
 const FORM_FIELDS = ["firstName", "lastName", "otherName", "dateOfBirth", "gender", "maritalStatus",
-    "phone", "email", "address", "bloodGroup", "genotype", "nextOfKin", "relationship", "nextOfKinPhone"];
+    "phone", "email", "address", "nextOfKin", "relationship", "nextOfKinPhone"];
 
 let editingPatientId = null;
 let currentPhoto = "";
@@ -1114,4 +1114,4 @@ unidentifiedForm.addEventListener("submit", function(event) {
 // INITIAL STATE
 
 syncRecordsView();
-updateKpis();
+updateKpis();
