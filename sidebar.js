@@ -21,7 +21,7 @@
         queue: [DASHBOARD, QUEUE],
         clinic: [DASHBOARD, CLINICS, ],
         appointment: [DASHBOARD, APPOINTMENTS,],
-        "nurse-station": [DASHBOARD, NURSE_STATION,],
+        "nurse-station": [DASHBOARD, NURSE_STATION, QUEUE],
         "emergency-unidentified": [DASHBOARD, REGISTRATION],
         "emergency-complete": [DASHBOARD, REGISTRATION, { label: "Emergency Record", href: "emergency-complete.html", icon: "fa-solid fa-file-medical" }]
     };
