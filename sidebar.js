@@ -6,9 +6,10 @@
     const RECORDS = { label: "Patient Records", href: "registration.html#records", icon: "fa-solid fa-folder-open" };
     const QUEUE = { label: "Patient Queue", href: "queue.html", icon: "fa-solid fa-users" };
     const APPOINTMENTS = { label: "Appointments", href: "appointment.html", icon: "fa-regular fa-calendar" };
+    const NURSE_STATION = { label: "Nurse Station", href: "nurse-station.html", icon: "fa-solid fa-user-nurse" };
 
     const SIDEBAR_MENUS = {
-        dashboard: [DASHBOARD, REGISTRATION, QUEUE, APPOINTMENTS,
+        dashboard: [DASHBOARD, REGISTRATION, QUEUE, NURSE_STATION, APPOINTMENTS,
             { label: "Services", icon: "fa-solid fa-stethoscope", children: [
                 { label: "Laboratory Services", href: "#" }, { label: "Scan", href: "#" }, { label: "Dental services", href: "#" }] },
             { label: "Wards", icon: "fa-solid fa-bed", children: [
@@ -18,6 +19,7 @@
             RECORDS, QUEUE],
         queue: [DASHBOARD, REGISTRATION, RECORDS, QUEUE],
         appointment: [DASHBOARD, APPOINTMENTS, QUEUE],
+        "nurse-station": [DASHBOARD, NURSE_STATION, QUEUE],
         "emergency-unidentified": [DASHBOARD, REGISTRATION],
         "emergency-complete": [DASHBOARD, REGISTRATION, { label: "Emergency Record", href: "emergency-complete.html", icon: "fa-solid fa-file-medical" }]
     };

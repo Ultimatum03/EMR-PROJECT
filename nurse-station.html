@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nurse Station | EMR</title>
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="registration.css">
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="topbar.css">
+    <link rel="stylesheet" href="queue.css">
+    <link rel="stylesheet" href="nurse.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <script src="theme.js"></script>
+    <script src="auth.js"></script>
+    <script>EMR_AUTH.requireAccess();</script>
+</head>
+
+<body>
+
+    <aside id="appSidebar" data-page="nurse-station"></aside>
+
+    <main class="main-content app-main">
+
+        <header id="appTopbar"></header>
+
+        <section class="queue-page">
+
+            <div class="page-heading">
+                <h1>Nurse Station</h1>
+                <p>Patients waiting today, across all clinics. Record vitals before they see the doctor.</p>
+            </div>
+
+            <div class="queue-card nurse-card">
+                <p id="nurseError" class="search-status error" role="alert"></p>
+
+                <div class="queue-table-wrap">
+                    <table class="queue-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Arrived</th>
+                                <th>Patient</th>
+                                <th>PID</th>
+                                <th>Clinic</th>
+                                <th>Type</th>
+                                <th>Vitals</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="nurseBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="queue-footer">
+                    <span id="nurseCount"></span>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- RECORD VITALS (outside the table so the 30s refresh never wipes what is being typed) -->
+        <div id="vitalsModal" class="registration-modal hidden" role="dialog" aria-modal="true" aria-labelledby="vitalsTitle">
+            <div class="card registration-modal-card nurse-modal-card">
+                <div class="card-header">
+                    <div>
+                        <h2 id="vitalsTitle">Record vitals</h2>
+                        <p id="vitalsSub"></p>
+                    </div>
+                    <button type="button" class="close-modal-btn" id="vitalsClose" aria-label="Close">&times;</button>
+                </div>
+                <form id="vitalsForm" novalidate>
+                    <div id="vitalsFields" class="form-grid"></div>
+                    <p id="vitalsError" class="nurse-form-error" role="alert"></p>
+                    <div class="nurse-form-actions">
+                        <button type="button" class="nurse-cancel" id="vitalsCancel">Cancel</button>
+                        <button type="submit" class="primary-btn" id="vitalsSave">Save vitals</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="emr-data.js"></script>
+    <script src="nurse-data.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="topbar.js"></script>
+    <script src="nurse-station.js"></script>
+
+</body>
+</html>

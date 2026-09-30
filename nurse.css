@@ -1,0 +1,59 @@
+/* Nurse station extras. Layout, cards, tables and buttons come from registration.css and queue.css. */
+
+.nurse-card {
+    padding-top: 26px;
+}
+
+.nurse-modal-card {
+    width: min(640px, 100%);
+}
+
+.nurse-note-field {
+    grid-column: 1 / -1;
+}
+
+.nurse-form-error {
+    min-height: 20px;
+    margin-top: 12px;
+    color: #b91c1c;
+    font-size: 14px;
+}
+
+:root[data-theme="dark"] .nurse-form-error {
+    color: #fca5a5;
+}
+
+.nurse-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 12px;
+}
+
+.nurse-cancel {
+    padding: 12px 20px;
+    border-radius: 7px;
+    background: var(--surface-3);
+    color: var(--text-2);
+    font-size: 14px;
+}
+
+.primary-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.nurse-taken {
+    color: var(--success);
+    font-weight: 600;
+}
+
+.nurse-not-taken {
+    color: var(--muted);
+}
+
+@media (max-width: 700px) {
+    .nurse-modal-card .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
