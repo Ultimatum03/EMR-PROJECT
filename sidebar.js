@@ -7,9 +7,10 @@
     const QUEUE = { label: "Patient Queue", href: "queue.html", icon: "fa-solid fa-users" };
     const APPOINTMENTS = { label: "Appointments", href: "appointment.html", icon: "fa-regular fa-calendar" };
     const NURSE_STATION = { label: "Nurse Station", href: "nurse-station.html", icon: "fa-solid fa-user-nurse" };
+    const CLINICS = { label: "Clinics", href: "clinic.html", icon: "fa-solid fa-hospital" };
 
     const SIDEBAR_MENUS = {
-        dashboard: [DASHBOARD, REGISTRATION, QUEUE, NURSE_STATION, APPOINTMENTS,
+        dashboard: [DASHBOARD, REGISTRATION, QUEUE, CLINICS, NURSE_STATION, APPOINTMENTS,
             { label: "Services", icon: "fa-solid fa-stethoscope", children: [
                 { label: "Laboratory Services", href: "#" }, { label: "Scan", href: "#" }, { label: "Dental services", href: "#" }] },
             { label: "Wards", icon: "fa-solid fa-bed", children: [
@@ -18,6 +19,7 @@
         registration: [DASHBOARD, { label: "Register Patient", href: "registration.html", icon: "fa-solid fa-user-plus" },
             RECORDS, QUEUE],
         queue: [DASHBOARD, QUEUE],
+        clinic: [DASHBOARD, CLINICS, QUEUE],
         appointment: [DASHBOARD, APPOINTMENTS, QUEUE],
         "nurse-station": [DASHBOARD, NURSE_STATION, QUEUE],
         "emergency-unidentified": [DASHBOARD, REGISTRATION],

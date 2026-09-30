@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clinics | EMR</title>
+
+<link rel="stylesheet" href="theme.css">
+<link rel="stylesheet" href="sidebar.css">
+<link rel="stylesheet" href="topbar.css">
+<link rel="stylesheet" href="queue.css">
+<link rel="stylesheet" href="nurse.css">
+<link rel="stylesheet" href="clinic.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+<script src="theme.js"></script>
+<script src="auth.js"></script>
+<script>EMR_AUTH.requireAccess();</script>
+
+</head>
+<body>
+
+<aside id="appSidebar" data-page="clinic"></aside>
+
+<div class="main app-main">
+
+<header id="appTopbar"></header>
+
+<main class="cl-page">
+    <p id="clinicMsg" class="search-status error" role="alert"></p>
+    <div id="clinicRoot"></div>
+</main>
+
+</div>
+
+<!-- Modal used by triage, transfer, existing records and add doctor -->
+<div id="clinicModal" class="cl-modal hidden" role="dialog" aria-modal="true" aria-labelledby="clinicModalTitle">
+    <div class="cl-modal-box">
+        <div class="cl-modal-head">
+            <div>
+                <h3 id="clinicModalTitle"></h3>
+                <p id="clinicModalSub"></p>
+            </div>
+            <button type="button" id="clinicModalClose" class="cl-icon-btn" aria-label="Close"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>
+        </div>
+        <div id="clinicModalBody"></div>
+    </div>
+</div>
+
+<script src="emr-data.js"></script>
+<script src="nurse-data.js"></script>
+<script src="clinic-data.js"></script>
+<script src="clinic.js"></script>
+<script src="sidebar.js"></script>
+<script src="topbar.js"></script>
+</body>
+</html>

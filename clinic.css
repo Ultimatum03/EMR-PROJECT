@@ -1,0 +1,153 @@
+/* Clinics page extras. Tables, clinic cards and status badges come from queue.css; forms from nurse.css. */
+
+#clinicMsg:empty { display: none; }
+#clinicMsg { margin: 0 0 16px; }
+
+a.clinic-card { text-decoration: none; }
+
+.cl-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.cl-card {
+    margin-bottom: 22px;
+    padding: 22px 26px 26px;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.cl-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.cl-card-head h2 { font-size: 20px; color: var(--text-strong); }
+.cl-card-head p { margin-top: 4px; color: var(--muted); font-size: 14px; }
+
+.cl-doctors {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+.cl-doctor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface-2);
+}
+
+.cl-doctor-avatar {
+    display: inline-flex;
+    flex: 0 0 40px;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+}
+
+.cl-doctor-text { flex: 1; min-width: 0; }
+.cl-doctor-text strong { display: block; color: var(--text-strong); overflow-wrap: anywhere; }
+.cl-doctor-text small { color: var(--muted); font-size: 13px; }
+
+.cl-none { color: var(--muted); }
+.cl-off { margin-top: 18px; }
+.cl-off summary { margin-bottom: 12px; color: var(--muted); font-size: 14px; cursor: pointer; }
+
+.cl-actions { display: flex; gap: 8px; }
+
+.cl-icon-btn {
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--accent);
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.cl-icon-btn:hover:not(:disabled) { background: var(--accent-soft); }
+.cl-icon-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cl-remove { flex: 0 0 38px; width: 32px; height: 32px; color: var(--muted); }
+
+.visit-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.visit-new { background: #dcfce7; color: #166534; }
+.visit-followup { background: #e3edfd; color: #1d5fd6; }
+:root[data-theme="dark"] .visit-new { background: #14532d; color: #86efac; }
+:root[data-theme="dark"] .visit-followup { background: #1e3a6b; color: #93c5fd; }
+
+.cl-empty td { padding: 22px 16px; color: var(--muted); text-align: center; }
+
+.cl-days { display: flex; flex-wrap: wrap; gap: 14px; }
+.cl-day { display: inline-flex; align-items: center; gap: 4px; font-weight: 400; }
+
+.cl-history-title { margin: 22px 0 8px; color: var(--text-strong); }
+.cl-history { list-style: none; }
+.cl-history li { padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px; }
+
+@media (max-width: 700px) {
+    .cl-card { padding: 18px; }
+    .cl-card-head { flex-wrap: wrap; }
+}
+
+/* Page padding and modal shell (self-contained so it works even if the shared modal styles differ). */
+.hidden { display: none !important; }
+body.modal-open { overflow: hidden; }
+.cl-page { padding: 28px 35px 40px; }
+
+.cl-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    background: rgba(8, 25, 48, 0.55);
+}
+
+.cl-modal-box {
+    width: min(560px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 24px 26px;
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+}
+
+.cl-modal-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.cl-modal-head h3 { font-size: 19px; color: var(--text-strong); }
+.cl-modal-head p { margin-top: 4px; color: var(--muted); font-size: 14px; }
