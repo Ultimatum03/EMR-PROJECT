@@ -165,6 +165,7 @@
     // The menu lives on <body> with fixed positioning so the table's horizontal scroll never clips it.
     let tab = "waiting";      // which table is showing
     let search = "";          // patient search text, kept across re-renders
+    let docsOpen = false;     // floating doctors panel open/closed, kept across re-renders
     let menuEl = null;
     let menuOwner = null;
 
@@ -176,7 +177,26 @@
     document.addEventListener("click", function (event) {
         if (menuEl && !menuEl.contains(event.target) && !event.target.closest(".cl-more")) closeMenu();
     });
-    document.addEventListener("keydown", function (event) { if (event.key === "Escape") closeMenu(); });
+    document.addEventListener("keydown", function (event) {
+        if (event.key !== "Escape") return;
+        closeMenu();
+        if (docsOpen && modal.classList.contains("hidden")) setDocs(false, true);
+    });
+    // Click anywhere outside the floating panel (and outside the modal it can open) closes it.
+    document.addEventListener("click", function (event) {
+        if (docsOpen && !event.target.closest(".cl-panel, .cl-fab, .cl-modal, .cl-menu")) setDocs(false);
+    });
+    function setDocs(open, refocus) {
+        docsOpen = open;
+        const panel = document.getElementById("clDoctorsPanel");
+        const fab = document.getElementById("clDoctorsFab");
+        if (panel) panel.classList.toggle("hidden", !open);
+        if (fab) {
+            fab.setAttribute("aria-expanded", open ? "true" : "false");
+            fab.classList.toggle("is-open", open);
+            if (refocus) fab.focus();
+        }
+    }
     window.addEventListener("resize", closeMenu);
     window.addEventListener("scroll", closeMenu, true);
 
@@ -467,13 +487,20 @@
         panelIcon.appendChild(icon("fa-solid fa-user-doctor"));
         const panelText = el("div");
         panelText.append(el("h2", "", "Doctors in clinic"), el("p", "", on.length + " on duty today"));
+        const panelClose = el("button", "cl-icon-btn cl-panel-close");
+        panelClose.type = "button";
+        panelClose.setAttribute("aria-label", "Close doctors panel");
+        panelClose.appendChild(icon("fa-solid fa-xmark"));
+        panelClose.addEventListener("click", function () { setDocs(false, true); });
         const panelHead = el("div", "cl-panel-head");
-        panelHead.append(panelIcon, panelText);
+        panelHead.append(panelIcon, panelText, panelClose);
 
         const list = el("div", "cl-doctor-list");
         on.forEach(function (d) { list.appendChild(doctorRow(d, true)); });
         if (!on.length) list.appendChild(el("p", "cl-none", "No doctors are on duty today."));
-        const panel = el("aside", "cl-panel");
+        const panel = el("aside", "cl-panel" + (docsOpen ? "" : " hidden"));
+        panel.id = "clDoctorsPanel";
+        panel.setAttribute("aria-label", "Doctors in clinic");
         panel.append(panelHead, list);
         if (off.length) {
             const details = el("details", "cl-off");
@@ -489,16 +516,25 @@
         add.addEventListener("click", function () { msg.textContent = ""; openModal("Add doctor", c.name, doctorForm(c)); });
         panel.appendChild(add);
 
+        // --- floating button that opens the doctors panel ---
+        const fab = el("button", "cl-fab" + (docsOpen ? " is-open" : ""));
+        fab.type = "button";
+        fab.id = "clDoctorsFab";
+        fab.title = "Doctors in clinic";
+        fab.setAttribute("aria-label", "Doctors in clinic, " + on.length + " on duty today");
+        fab.setAttribute("aria-controls", "clDoctorsPanel");
+        fab.setAttribute("aria-expanded", docsOpen ? "true" : "false");
+        fab.append(icon("fa-solid fa-user-doctor"), el("span", "cl-fab-badge", String(on.length)));
+        fab.addEventListener("click", function () { setDocs(!docsOpen); });
+
         // --- assemble ---
         const back = el("a", "cl-back");
         back.href = "#";
         back.append(icon("fa-solid fa-arrow-left"), document.createTextNode(" All clinics"));
         const main = el("div", "cl-main");
         main.append(hero, stats, queueCard);
-        const layout = el("div", "cl-layout");
-        layout.append(main, panel);
         const wrap = el("div");
-        wrap.append(back, layout);
+        wrap.append(back, main, panel, fab);
         return wrap;
     }
 
@@ -526,7 +562,7 @@
         root.replaceChildren(c ? landingView(c, visits, patients, doctors) : listView(visits));
     }
 
-    window.addEventListener("hashchange", function () { closeModal(); msg.textContent = ""; tab = "waiting"; search = ""; render(); });
+    window.addEventListener("hashchange", function () { closeModal(); msg.textContent = ""; tab = "waiting"; search = ""; docsOpen = false; render(); });
     window.addEventListener("storage", function (event) {
         if (["visits", "patients", "vitals", "doctors"].indexOf(event.key) !== -1) render();
     });
