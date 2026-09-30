@@ -977,3 +977,10 @@ body {
     width: auto;
     margin: 0;
 }
+
+
+/* Required field marker */
+.required-mark {
+    color: #dc2626;
+    font-weight: 700;
+}
