@@ -38,3 +38,57 @@ CREATE TABLE services (
     service_description TEXT NOT NULL,
     service_cost DECIMAL(10, 2) NOT NULL
 );
+/* create table staff */
+CREATE TABLE staff (
+    staff_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    other_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR(10) NOT NULL,
+    address TEXT NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP
+); 
+/*create table doctors */
+CREATE TABLE doctors (      
+    staff_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    other_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR(10) NOT NULL,
+    address TEXT NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+        specialization VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        foreign key (staff_id) references staff(staff_id
+        );
+        /*create table nurses */
+CREATE TABLE nurses (     
+    staff_id INT PRIMARY KEY,
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    other_name VARCHAR(50) NOT NULL,
+    date_of_birth DATE NOT NULL,
+    gender VARCHAR(10) NOT NULL,
+    address TEXT NOT NULL,
+    phone_number VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        foreign key (staff_id) references staff(staff_id)
+        );
+        /*create table locations */
+CREATE TABLE locations (
+    location_id INT PRIMARY KEY,
+    location_name VARCHAR(100) NOT NULL,
+    location_address TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME2 NOT NULL DEFAULT CURRENT_TIMESTAMP
+);  
