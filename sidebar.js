@@ -16,7 +16,7 @@
                 { label: "Children Wards", href: "#" }, { label: "Female Wards", href: "#" }, { label: "Male Wards", href: "#" }] },
             { label: "Settings", href: "setting.html", icon: "fa-solid fa-gear" }],
         registration: [DASHBOARD, { label: "Register Patient", href: "registration.html", icon: "fa-solid fa-user-plus" },
-            RECORDS, QUEUE],
+            RECORDS,],
         queue: [DASHBOARD, QUEUE],
         appointment: [DASHBOARD, APPOINTMENTS, QUEUE],
         "nurse-station": [DASHBOARD, NURSE_STATION, QUEUE],
