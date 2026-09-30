@@ -86,6 +86,100 @@
         render();
     });
 
+    // ---------- ward cards + bed-capacity modal ----------
+    const wardModal = document.getElementById("wardModal");
+    const wardBody = document.getElementById("wardBody");
+    const WARD_ICONS = { male: "fa-solid fa-person", female: "fa-solid fa-person-dress", children: "fa-solid fa-baby" };
+    const wardCounts = {};
+    const wardSubs = {};
+    let openWardId = null;
+    let wardOpener = null;
+
+    WARD.WARDS.forEach(function (w) {
+        const b = el("button", "ward-card ward-" + w.id);
+        b.type = "button";
+        b.setAttribute("aria-haspopup", "dialog");
+        const ic = el("span", "ward-card-icon");
+        ic.appendChild(icon(WARD_ICONS[w.id] || "fa-solid fa-bed"));
+        wardCounts[w.id] = el("strong", "ward-card-count", "0");
+        wardSubs[w.id] = el("span", "ward-card-sub", "patients waiting");
+        const text = el("span", "ward-card-text");
+        text.append(el("span", "ward-card-name", w.name), wardCounts[w.id], wardSubs[w.id]);
+        b.append(ic, text, icon("fa-solid fa-chevron-right ward-card-chevron"));
+        b.addEventListener("click", function () { wardOpener = b; openWard(w.id); });
+        document.getElementById("wardCards").appendChild(b);
+    });
+
+    function renderWards(waiting, byId) {
+        const n = {};
+        WARD.WARDS.forEach(function (w) { n[w.id] = 0; });
+        waiting.forEach(function (v) {
+            const id = WARD.wardFor(byId[v.patientId]);
+            if (id && Object.prototype.hasOwnProperty.call(n, id)) n[id]++;
+        });
+        WARD.WARDS.forEach(function (w) {
+            wardCounts[w.id].textContent = String(n[w.id]);
+            wardSubs[w.id].textContent = n[w.id] === 1 ? "patient waiting" : "patients waiting";
+        });
+    }
+
+    function wardStat(kind, label, value) {
+        const s = el("div", "ward-stat " + kind);
+        s.append(el("span", "ward-stat-label", label), el("strong", "ward-stat-value", String(value)));
+        return s;
+    }
+
+    function fillWard(id) {
+        const w = WARD.WARDS.find(function (x) { return x.id === id; });
+        if (!w) return;
+        document.getElementById("wardTitle").textContent = w.name;
+        document.getElementById("wardSub").textContent = "Bed capacity";
+        let beds;
+        try { beds = WARD.getBeds(id); } catch (err) { beds = null; }
+        if (!beds) {
+            wardBody.replaceChildren(el("p", "search-status error", "Could not read bed data."));
+            return;
+        }
+        const pct = beds.total ? Math.round(beds.occupied / beds.total * 100) : 0;
+        const stats = el("div", "ward-stats");
+        stats.append(wardStat("is-total", "Total beds", beds.total),
+            wardStat("is-occupied", "Occupied", beds.occupied),
+            wardStat("is-available", "Available", beds.available));
+        const row = el("div", "ward-occupancy-row");
+        const pctText = el("strong", "", beds.total ? pct + "%" : "No beds set up");
+        row.append(el("span", "", "Occupancy"), pctText);
+        const fill = el("div", "ward-bar-fill" + (pct >= 90 ? " level-high" : pct >= 70 ? " level-mid" : ""));
+        fill.style.width = pct + "%";
+        const bar = el("div", "ward-bar");
+        bar.setAttribute("role", "progressbar");
+        bar.setAttribute("aria-valuemin", "0");
+        bar.setAttribute("aria-valuemax", "100");
+        bar.setAttribute("aria-valuenow", String(pct));
+        bar.setAttribute("aria-label", w.name + " occupancy");
+        bar.appendChild(fill);
+        wardBody.replaceChildren(stats, row, bar);
+    }
+
+    function openWard(id) {
+        openWardId = id;
+        fillWard(id);
+        wardModal.classList.remove("hidden");
+        document.body.classList.add("modal-open");
+        document.getElementById("wardClose").focus();
+    }
+    function closeWard() {
+        openWardId = null;
+        wardModal.classList.add("hidden");
+        document.body.classList.remove("modal-open");
+        wardBody.replaceChildren();
+        if (wardOpener) wardOpener.focus();
+    }
+    document.getElementById("wardClose").addEventListener("click", closeWard);
+    wardModal.addEventListener("click", function (event) { if (event.target === wardModal) closeWard(); });
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !wardModal.classList.contains("hidden")) closeWard();
+    });
+
     // ---------- table ----------
     function timeText(iso) {
         const d = new Date(iso);
@@ -114,6 +208,9 @@
             const e = (b.source === "emergency") - (a.source === "emergency"); // emergencies first
             return e || String(a.time).localeCompare(String(b.time));
         });
+
+        renderWards(waiting, byId);
+        if (openWardId) fillWard(openWardId);
 
         body.replaceChildren();
         if (!waiting.length) {
@@ -184,7 +281,7 @@
     }
 
     window.addEventListener("storage", function (event) {
-        if (event.key === "visits" || event.key === "patients" || event.key === "vitals") render();
+        if (event.key === "visits" || event.key === "patients" || event.key === "vitals" || event.key === "wardBeds") render();
     });
     setInterval(render, 30000);
     render();

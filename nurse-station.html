@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="topbar.css">
     <link rel="stylesheet" href="queue.css">
     <link rel="stylesheet" href="nurse.css">
+    <link rel="stylesheet" href="ward.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
 
     <script src="theme.js"></script>
@@ -32,6 +33,8 @@
                 <h1>Nurse Station</h1>
                 <p>Patients waiting today, across all clinics. Record vitals before they see the doctor.</p>
             </div>
+
+            <div id="wardCards" class="ward-cards"></div>
 
             <div class="queue-card nurse-card">
                 <p id="nurseError" class="search-status error" role="alert"></p>
@@ -82,10 +85,25 @@
             </div>
         </div>
 
+        <!-- WARD BEDS -->
+        <div id="wardModal" class="registration-modal hidden" role="dialog" aria-modal="true" aria-labelledby="wardTitle">
+            <div class="card registration-modal-card ward-modal-card">
+                <div class="card-header">
+                    <div>
+                        <h2 id="wardTitle"></h2>
+                        <p id="wardSub"></p>
+                    </div>
+                    <button type="button" class="close-modal-btn" id="wardClose" aria-label="Close">&times;</button>
+                </div>
+                <div id="wardBody"></div>
+            </div>
+        </div>
+
     </main>
 
     <script src="emr-data.js"></script>
     <script src="nurse-data.js"></script>
+    <script src="ward-data.js"></script>
     <script src="sidebar.js"></script>
     <script src="topbar.js"></script>
     <script src="nurse-station.js"></script>
