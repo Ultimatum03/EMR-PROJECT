@@ -5,7 +5,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    gap: 16px;
+    gap: 4px;
     min-height: 80px;
     padding: 0 32px;
     background: var(--surface);
@@ -16,7 +16,7 @@
 .topbar-cluster {
     display: flex;
     align-items: center;
-    gap: 22px;
+    gap: 10px;
 }
 
 .topbar-icon-btn {
@@ -42,7 +42,7 @@
 .topbar-user-btn {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 8px;
     padding: 4px 8px 4px 4px;
     border: none;
     border-radius: 999px;
@@ -85,7 +85,7 @@
 }
 
 .topbar-chevron {
-    margin-left: 14px;
+    margin-left: 6px;
     font-size: 13px;
     color: var(--muted);
 }
@@ -131,7 +131,7 @@
 .topbar-clock {
     display: flex;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
     color: var(--text-strong);
 }
 
@@ -158,7 +158,7 @@
 /* Page action buttons placed inside the top bar (e.g. registration). */
 .topbar-page-actions {
     display: flex;
-    gap: 10px;
+    gap: 6px;
 }
 
 /* Left-side content a page keeps in its header (e.g. dashboard search, page title). */
