@@ -711,6 +711,12 @@ let loadSeq = 0;
 
 function loadPatients() {
     const seq = ++loadSeq;
+    // Records are not listed until the user searches.
+    if (document.getElementById("searchPatient").value.trim() === "") {
+        patientTableBody.removeAttribute("aria-busy");
+        patientTableBody.replaceChildren(stateRow("fa-solid fa-magnifying-glass", "Search for a patient", "Enter a name, patient ID or phone number to view records."));
+        return;
+    }
     showTableSkeleton();
     EMR.fetchPatients().then(function(patients) {
         if (seq !== loadSeq) return; // a newer load started (e.g. fast typing) — drop this result
