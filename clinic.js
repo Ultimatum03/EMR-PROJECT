@@ -102,10 +102,13 @@
     }
 
     function openEncounter(v) {
-        let m;
-        try { m = EMR.setVisitStatus(v.id, "in-consultation"); } catch (e) { m = "Could not open the encounter."; }
+        let m = "";
+        if (v.status === "checked-in") { // first time: move the patient to "With doctor"
+            try { m = EMR.setVisitStatus(v.id, "in-consultation"); } catch (e) { m = "Could not open the encounter."; }
+        }
         msg.textContent = m;
-        render();
+        if (m) { render(); return; }
+        location.href = "encounter.html?visit=" + encodeURIComponent(v.id);
     }
 
     function showRecords(p) {
@@ -203,7 +206,7 @@
     function menuItems(v, p) {
         const waiting = v.status === "checked-in";
         return [
-            { label: "Open encounter", icon: "fa-solid fa-play", ok: waiting, why: "patient is not waiting", run: function () { openEncounter(v); } },
+            { label: "Open encounter", icon: "fa-solid fa-play", ok: waiting || v.status === "in-consultation", why: "patient is not waiting or with a doctor", run: function () { openEncounter(v); } },
             { label: "Transfer", icon: "fa-solid fa-right-left", ok: v.status === "scheduled" || waiting, why: "only scheduled or waiting patients",
               run: function () { openModal("Transfer patient", fullName(p) + " · " + v.patientId, transferForm(v)); } },
             { label: "Triage", icon: "fa-solid fa-briefcase-medical", ok: waiting, why: "patient is not waiting",

@@ -1,0 +1,133 @@
+/* Open encounter page. Uses theme.css tokens (light + dark). */
+.enc-page { padding: 24px 26px 40px 30px; }
+.enc-back { border: none; background: none; color: var(--accent); font-size: 15px; font-weight: 600; cursor: pointer; margin-bottom: 14px; }
+
+.enc-banner { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 20px 24px; margin-bottom: 20px; }
+.enc-who { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.enc-who .q-avatar { width: 64px; height: 64px; flex: 0 0 64px; }
+.enc-who h1 { font-size: 24px; color: var(--text-strong); display: flex; align-items: center; gap: 10px; }
+.enc-facts { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 6px; color: var(--muted); font-size: 14px; }
+.enc-facts strong { color: var(--text-strong); font-weight: 600; }
+.enc-flag { padding: 3px 10px; border-radius: 999px; background: #fde8e8; color: #c81e1e; font-size: 12px; font-weight: 600; }
+.enc-vitals { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 10px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+.enc-vital { padding: 10px 12px; border-radius: 8px; background: var(--surface-2); }
+.enc-vital span { display: block; color: var(--muted); font-size: 12px; }
+.enc-vital strong { font-size: 17px; color: var(--text-strong); }
+.enc-vital small { color: var(--muted); font-size: 12px; font-weight: 400; }
+.enc-vitals-note { grid-column: 1 / -1; color: var(--muted); font-size: 13px; }
+
+.enc-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); gap: 20px; align-items: start; }
+.enc-panel { background: var(--surface); border-radius: 12px; box-shadow: var(--shadow); padding: 20px 22px 24px; }
+.enc-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.enc-panel-head h2 { font-size: 19px; color: var(--text-strong); }
+
+.enc-menu-wrap { position: relative; }
+.enc-note-btn { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; border: none; border-radius: 8px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; }
+.enc-menu { position: absolute; right: 0; top: calc(100% + 6px); z-index: 20; min-width: 230px; padding: 6px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); box-shadow: 0 10px 30px rgba(15, 30, 61, 0.18); }
+.enc-menu.hidden { display: none; }
+.enc-menu button { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px; border: none; border-radius: 6px; background: none; color: var(--text); font-size: 14px; text-align: left; cursor: pointer; }
+.enc-menu button:hover, .enc-menu button:focus-visible { background: var(--surface-3); }
+.enc-menu i { width: 18px; color: var(--accent); text-align: center; }
+
+.enc-editor { margin-bottom: 18px; padding: 16px; border: 1.5px solid var(--accent); border-radius: 10px; }
+.enc-editor textarea, .enc-field input, .enc-field select, .enc-search input { width: 100%; border: 1px solid var(--border-strong); border-radius: 6px; background: var(--surface); color: var(--text); font: inherit; font-size: 15px; padding: 10px 12px; }
+.enc-editor textarea { min-height: 220px; resize: vertical; line-height: 1.5; margin: 10px 0; }
+.enc-editor-head { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--text-strong); }
+.enc-actions { display: flex; justify-content: flex-end; gap: 10px; }
+.enc-ghost { padding: 10px 16px; border: 1px solid var(--border-strong); border-radius: 6px; background: none; color: var(--text); font-size: 14px; cursor: pointer; }
+.enc-err { min-height: 18px; margin: 8px 0 0; color: #dc2626; font-size: 13px; }
+
+.enc-note { padding: 14px 0; border-top: 1px solid var(--border); }
+.enc-note:first-child { border-top: none; padding-top: 0; }
+.enc-note-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 8px; color: var(--muted); font-size: 13px; }
+.enc-badge { padding: 3px 10px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 600; }
+.enc-note-body { white-space: pre-wrap; color: var(--text); font-size: 15px; line-height: 1.5; }
+.enc-empty { padding: 28px 10px; color: var(--muted); text-align: center; font-size: 15px; }
+
+.enc-tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid var(--border); }
+.enc-tab { padding: 10px 14px; border: none; border-bottom: 3px solid transparent; background: none; color: var(--muted); font-size: 15px; font-weight: 600; cursor: pointer; }
+.enc-tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+.enc-tab em { margin-left: 6px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); font-style: normal; font-size: 12px; }
+
+.enc-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; max-height: 150px; overflow-y: auto; }
+.enc-chip { padding: 6px 12px; border: 1px solid var(--border-strong); border-radius: 999px; background: var(--surface); color: var(--text); font-size: 13px; cursor: pointer; }
+.enc-chip.on { border-color: var(--accent); background: var(--accent); color: #fff; }
+.enc-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 10px; color: var(--muted); font-size: 13px; }
+.enc-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.enc-sel-title { margin: 12px 0 6px; color: var(--text-strong); font-size: 14px; font-weight: 600; }
+.enc-rx-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; margin-bottom: 6px; border-radius: 8px; background: var(--surface-2); font-size: 14px; color: var(--text); }
+.enc-rx-item button { border: none; background: none; color: #dc2626; cursor: pointer; font-size: 16px; }
+.enc-req { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--border); }
+.enc-req-card { padding: 10px 12px; margin-top: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px; color: var(--text); }
+.enc-req-card small { display: block; margin-top: 4px; color: var(--muted); }
+.enc-urgent { color: #c81e1e; font-weight: 600; }
+
+@media (max-width: 1000px) { .enc-grid { grid-template-columns: minmax(0, 1fr); } }
+@media (max-width: 520px) { .enc-page { padding: 18px 14px 32px; } .enc-row { grid-template-columns: 1fr; } }
+
+/* ---------- Tabbed note editor (templated note types) ---------- */
+/* Local colour tokens: theme.css has no warning / success-soft tokens. Dark values below. */
+.enc-page {
+    --enc-ok-soft: #dcfce7;
+    --enc-ok-text: #166534;
+    --enc-warn: #f59e0b;
+    --enc-warn-soft: #fef3c7;
+    --enc-warn-text: #92400e;
+}
+:root[data-theme="dark"] .enc-page {
+    --enc-ok-soft: rgba(34, 197, 94, 0.16);
+    --enc-ok-text: #86efac;
+    --enc-warn: #fbbf24;
+    --enc-warn-soft: rgba(251, 191, 36, 0.16);
+    --enc-warn-text: #fcd34d;
+}
+
+.enc-wiz { margin-bottom: 18px; }
+.enc-wiz-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 12px; font-weight: 600; color: var(--text-strong); }
+.enc-wiz-title { display: flex; align-items: center; gap: 10px; }
+
+.enc-steps { display: flex; gap: 8px; margin-bottom: 14px; padding-bottom: 6px; overflow-x: auto; }
+.enc-step { display: inline-flex; align-items: center; gap: 8px; flex: 0 0 auto; padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 500; white-space: nowrap; cursor: pointer; }
+.enc-step.active { border-color: var(--accent); background: var(--accent); color: #fff; font-weight: 600; }
+.enc-step-mark { color: var(--success); font-size: 16px; }
+.enc-step.active .enc-step-mark { color: #fff; }
+.enc-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--enc-warn); }
+.enc-step:focus-visible, .enc-chip:focus-visible, .enc-ghost:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.enc-sec-card { padding: 18px 20px 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.enc-sec-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.enc-sec-head h3 { font-size: 18px; color: var(--text-strong); }
+.enc-answered { display: inline-flex; align-items: center; gap: 6px; padding: 5px 10px; border-radius: 8px; background: var(--enc-ok-soft); color: var(--enc-ok-text); font-size: 13px; font-weight: 600; }
+.enc-answered i { color: var(--success); }
+.enc-prompt { margin: 4px 0 12px; color: var(--muted); font-size: 14px; }
+.enc-text-wrap { position: relative; }
+.enc-wiz-text { display: block; width: 100%; min-height: 150px; padding: 12px 14px 30px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); color: var(--text); font: inherit; font-size: 15px; line-height: 1.5; resize: vertical; }
+.enc-count { position: absolute; right: 24px; bottom: 8px; color: var(--muted); font-size: 12px; pointer-events: none; }
+.enc-quick-title { margin: 14px 0 8px; color: var(--text-2); font-size: 13px; }
+
+.enc-saved { margin: 10px 0 0; color: var(--muted); font-size: 13px; }
+.enc-confirm { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; padding: 10px 12px; border-radius: 8px; background: var(--enc-warn-soft); }
+.enc-confirm p { flex: 1 1 220px; margin: 0; color: var(--text); font-size: 14px; }
+
+.enc-wiz-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
+.enc-wiz-foot .enc-actions { flex-wrap: wrap; }
+.enc-prog-text { color: var(--text-2); font-size: 14px; }
+.enc-seg-row { display: flex; gap: 6px; margin-top: 8px; }
+.enc-seg { flex: 0 1 46px; height: 6px; border-radius: 3px; background: var(--border-strong); }
+.enc-seg.done { background: var(--success); }
+.enc-btn-icon { display: inline-flex; align-items: center; gap: 10px; }
+.enc-ghost:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* Note list: sectioned notes, drafts, addenda */
+.enc-badge-draft { background: var(--enc-warn-soft); color: var(--enc-warn-text); }
+.enc-note-sec { margin: 0 0 10px; }
+.enc-note-sec-title { margin-bottom: 2px; color: var(--muted); font-size: 13px; font-weight: 600; }
+.enc-note-sec-text { white-space: pre-wrap; color: var(--text); font-size: 15px; line-height: 1.5; }
+.enc-note-sec-text.enc-note-none { color: var(--muted-2); font-style: italic; }
+.enc-note-actions { display: flex; gap: 10px; margin-top: 10px; }
+.enc-addendum { margin-top: 12px; padding: 10px 12px; border-left: 3px solid var(--accent); border-radius: 0 8px 8px 0; background: var(--surface-2); }
+.enc-addendum-meta { margin-bottom: 4px; color: var(--muted); font-size: 12px; }
+.enc-addendum-form { margin-top: 12px; }
+.enc-addendum-text { min-height: 90px; padding-bottom: 12px; }
+
+@media (max-width: 520px) { .enc-wiz-foot .enc-actions { width: 100%; } .enc-sec-card { padding: 14px 14px 12px; } }

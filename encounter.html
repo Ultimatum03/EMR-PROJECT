@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encounter | EMR</title>
+
+    <link rel="stylesheet" href="theme.css">
+    <link rel="stylesheet" href="registration.css">
+    <link rel="stylesheet" href="sidebar.css">
+    <link rel="stylesheet" href="topbar.css">
+    <link rel="stylesheet" href="encounter.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <script src="theme.js"></script>
+    <script src="auth.js"></script>
+    <script>EMR_AUTH.requireAccess();</script>
+</head>
+
+<body>
+
+    <aside id="appSidebar" data-page="clinics"></aside>
+
+    <main class="main-content app-main">
+
+        <header id="appTopbar"></header>
+
+        <section class="enc-page">
+
+            <button type="button" class="enc-back" id="encBack"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Back to clinic</button>
+
+            <!-- PATIENT BANNER -->
+            <div class="enc-banner" id="encBanner"></div>
+
+            <div class="enc-grid">
+
+                <!-- NOTES -->
+                <section class="enc-panel" aria-labelledby="notesTitle">
+                    <div class="enc-panel-head">
+                        <h2 id="notesTitle">Clinical notes</h2>
+                        <div class="enc-menu-wrap">
+                            <button type="button" class="enc-note-btn" id="noteBtn" aria-haspopup="menu" aria-expanded="false">
+                                <i class="fa-solid fa-file-pen" aria-hidden="true"></i> Note <i class="fa-solid fa-chevron-down" aria-hidden="true"></i>
+                            </button>
+                            <div class="enc-menu hidden" id="noteMenu" role="menu"></div>
+                        </div>
+                    </div>
+                    <div id="noteEditor"></div>
+                    <div id="noteList"></div>
+                </section>
+
+                <!-- ORDERS -->
+                <section class="enc-panel" aria-labelledby="ordersTitle">
+                    <div class="enc-panel-head"><h2 id="ordersTitle">Orders</h2></div>
+                    <div class="enc-tabs" role="tablist" id="orderTabs"></div>
+                    <div id="orderBody"></div>
+                </section>
+
+            </div>
+        </section>
+
+    </main>
+
+    <script src="emr-data.js"></script>
+    <script src="nurse-data.js"></script>
+    <script src="sidebar.js"></script>
+    <script src="topbar.js"></script>
+    <script src="encounter.js"></script>
+
+</body>
+</html>

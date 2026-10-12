@@ -133,10 +133,36 @@
         const w = WARD.WARDS.find(function (x) { return x.id === id; });
         if (!w) return;
         document.getElementById("wardTitle").textContent = w.name;
+        let units = null, beds = null, failed = false;
+        try {
+            units = WARD.getUnits(id);
+            if (!units) beds = WARD.getBeds(id);
+        } catch (err) { failed = true; }
+        if (!failed && units) {
+            document.getElementById("wardSub").textContent = "Bed occupancy by unit";
+            const list = el("div", "ward-units");
+            units.forEach(function (u) {
+                const p = u.total ? Math.round(u.occupied / u.total * 100) : 0;
+                const row = el("div", "ward-unit");
+                const bar = el("div", "ward-bar ward-unit-bar");
+                bar.setAttribute("role", "progressbar");
+                bar.setAttribute("aria-valuemin", "0");
+                bar.setAttribute("aria-valuemax", "100");
+                bar.setAttribute("aria-valuenow", String(p));
+                bar.setAttribute("aria-label", u.name + " occupancy");
+                const f = el("div", "ward-bar-fill" + (p >= 90 ? " level-high" : p >= 70 ? " level-mid" : ""));
+                f.style.width = p + "%";
+                bar.appendChild(f);
+                const occ = el("span", "ward-unit-occ");
+                occ.append(el("strong", "", u.occupied + " / " + u.total), document.createTextNode(" beds · " + (u.total ? p + "%" : "none set up")));
+                row.append(el("span", "ward-unit-name", u.name), bar, occ);
+                list.appendChild(row);
+            });
+            wardBody.replaceChildren(list);
+            return;
+        }
         document.getElementById("wardSub").textContent = "Bed capacity";
-        let beds;
-        try { beds = WARD.getBeds(id); } catch (err) { beds = null; }
-        if (!beds) {
+        if (failed || !beds) {
             wardBody.replaceChildren(el("p", "search-status error", "Could not read bed data."));
             return;
         }

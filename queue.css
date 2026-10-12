@@ -2,28 +2,35 @@
 
 .queue-page {
     padding: 30px 26px 40px 30px;
+    container-type: inline-size;
 }
 
 /* ---------- Clinic cards ---------- */
 
 .clinic-cards {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(150px, 1fr));
-    gap: 18px;
-    margin-bottom: 26px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* spreads the cards evenly across the full row */
+    gap: 14px;
+    margin-bottom: 22px;
 }
 
 .clinic-card {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
-    min-height: 106px;
-    padding: 16px 16px 16px 18px;
+    justify-content: center;
+    gap: 8px;
+    flex: 0 0 120px;
+    width: 120px;
+    aspect-ratio: 1 / 1;
+    min-height: 0;
+    padding: 10px;
     border: 1px solid var(--tone-border);
     border-radius: 10px;
     background: var(--tone-bg);
     color: var(--text-strong);
-    text-align: left;
+    text-align: center;
     cursor: pointer;
     transition: box-shadow 0.2s, transform 0.2s;
 }
@@ -34,44 +41,49 @@
 
 .clinic-card-icon {
     display: inline-flex;
-    flex: 0 0 58px;
+    flex: 0 0 40px;
     align-items: center;
     justify-content: center;
-    width: 58px;
-    height: 58px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     background: var(--tone-icon-bg);
     color: var(--tone-icon);
-    font-size: 26px;
+    font-size: 17px;
 }
 
 .clinic-card-text {
     display: flex;
-    flex: 1;
+    flex: 0 0 auto;
     flex-direction: column;
-    gap: 8px;
+    align-items: center;
+    gap: 2px;
+    max-width: 100%;
     min-width: 0;
 }
 
 .clinic-card-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     color: var(--tone-text);
+    overflow-wrap: anywhere;
 }
 
 .clinic-card-count {
-    font-size: 16px;
+    font-size: 13px;
     color: var(--muted);
+    white-space: nowrap;
 }
 
 .clinic-card-count strong {
-    font-size: 21px;
+    font-size: 17px;
     color: var(--text-strong);
 }
 
 .clinic-card-chevron {
+    display: none; /* square cards: the whole card is the click target */
     color: var(--muted);
-    font-size: 15px;
+    font-size: 12px;
 }
 
 .clinic-card.active {
@@ -100,12 +112,15 @@
 .tone-sky    { --tone-bg: #eef5ff; --tone-border: #cfe0fa; --tone-icon-bg: #d9e8fd; --tone-icon: #1d5fd6; --tone-text: #0f1e3d; }
 .tone-red    { --tone-bg: #fdeeee; --tone-border: #f7cfcf; --tone-icon-bg: #fbdada; --tone-icon: #e02424; --tone-text: #0f1e3d; }
 
+.tone-neutral { --tone-bg: #f4f6fa; --tone-border: #dbe1ec; --tone-icon-bg: #e5e9f2; --tone-icon: #475569; --tone-text: #0f1e3d; }
+
 /* Tones (dark) */
 :root[data-theme="dark"] .tone-blue   { --tone-bg: #1b2b47; --tone-border: #2b4470; --tone-icon-bg: #24406b; --tone-icon: #7fb0ff; --tone-text: #e5e7eb; }
 :root[data-theme="dark"] .tone-purple { --tone-bg: #2a2347; --tone-border: #43386e; --tone-icon-bg: #3a2f63; --tone-icon: #b69cff; --tone-text: #e5e7eb; }
 :root[data-theme="dark"] .tone-green  { --tone-bg: #173229; --tone-border: #25513f; --tone-icon-bg: #1f4535; --tone-icon: #4ade80; --tone-text: #86efac; }
 :root[data-theme="dark"] .tone-amber  { --tone-bg: #34290f; --tone-border: #5a4618; --tone-icon-bg: #4a3a14; --tone-icon: #fbbf24; --tone-text: #e5e7eb; }
 :root[data-theme="dark"] .tone-sky    { --tone-bg: #19304a; --tone-border: #2a4d73; --tone-icon-bg: #22425f; --tone-icon: #7cc0ff; --tone-text: #e5e7eb; }
+:root[data-theme="dark"] .tone-neutral { --tone-bg: #1e2635; --tone-border: #334155; --tone-icon-bg: #2a3446; --tone-icon: #cbd5e1; --tone-text: #e5e7eb; }
 :root[data-theme="dark"] .tone-red    { --tone-bg: #3a1c1f; --tone-border: #62292e; --tone-icon-bg: #512328; --tone-icon: #f87171; --tone-text: #e5e7eb; }
 
 /* ---------- Queue card ---------- */
@@ -498,14 +513,22 @@
     cursor: default;
 }
 
+/* Square cards are a fixed 120px, spaced evenly across the row, and wrap when the content area is narrow.
+   On narrow phones they switch to 3 per row and fill the width, staying square. */
+@container (max-width: 420px) {
+    .clinic-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .clinic-card { width: 100%; gap: 6px; padding: 6px; }
+    .clinic-card-icon { flex-basis: 32px; width: 32px; height: 32px; font-size: 14px; }
+    .clinic-card-name, .clinic-card-count { font-size: 12px; }
+    .clinic-card-count strong { font-size: 15px; }
+}
+
 @media (max-width: 1200px) {
-    .clinic-cards { grid-template-columns: repeat(3, 1fr); }
     .queue-filters { flex-wrap: wrap; }
     .filter-btn { margin-left: 0; }
 }
 
 @media (max-width: 700px) {
-    .clinic-cards { grid-template-columns: 1fr 1fr; }
     .queue-card-head { flex-wrap: wrap; }
 }
 

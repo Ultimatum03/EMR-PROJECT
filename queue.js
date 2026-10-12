@@ -18,7 +18,7 @@
     };
     const STATUS_ORDER = { "in-consultation": 0, "checked-in": 1, "scheduled": 2, "done": 3 };
     const STATUS_TEXT = { "scheduled": "Scheduled", "checked-in": "Waiting", "in-consultation": "With Doctor", "done": "Done" };
-    const ACTION_LABELS = { "checked-in": "Check in", "in-consultation": "Start consultation", "done": "Complete" };
+    const ACTION_LABELS = { "checked-in": "Check in", "in-consultation": "Start consultation" };
     const TYPE_LOOK = {
         "appointment": { label: "Appointment", icon: "fa-regular fa-calendar" },
         "walk-in": { label: "Walk-in", icon: "fa-solid fa-person-walking" },
@@ -28,6 +28,10 @@
     // Filters apply when "Filter" is pressed (or Enter in search); live refreshes keep them.
     let applied = { q: "", status: "", type: "", time: "today" };
     let page = 1;
+
+    // Clinic cards: only the first CARD_LIMIT are shown until "More" is pressed.
+    const CARD_LIMIT = 4;
+    let showAllClinics = false;
 
     function el(tag, className, text) {
         const node = document.createElement(tag);
@@ -46,7 +50,18 @@
     function renderTabs(current, visits) {
         const today = EMR.today();
         tabs.replaceChildren();
-        EMR.CLINICS.forEach(function (c) {
+
+        // Collapsed view: first CARD_LIMIT clinics; a selected clinic from the hidden ones takes the last slot so it stays visible.
+        let list = EMR.CLINICS.slice();
+        if (!showAllClinics && list.length > CARD_LIMIT) {
+            const shown = list.slice(0, CARD_LIMIT);
+            const selected = EMR.clinic(current);
+            if (shown.indexOf(selected) === -1) shown[CARD_LIMIT - 1] = selected;
+            list = shown;
+        }
+        const hiddenCount = EMR.CLINICS.length - list.length;
+
+        list.forEach(function (c) {
             const load = visits.filter(function (v) {
                 return v.clinicId === c.id && v.date === today && v.status !== "cancelled";
             }).length;
@@ -63,10 +78,34 @@
             btn.append(iconWrap, text, icon("fa-solid fa-chevron-right clinic-card-chevron"));
             btn.addEventListener("click", function () {
                 page = 1;
-                location.hash = "clinic=" + c.id;
+                showAllClinics = false;
+                if (location.hash === "#clinic=" + c.id) render(); // hash unchanged, so no hashchange will fire
+                else location.hash = "clinic=" + c.id;
             });
             tabs.appendChild(btn);
         });
+
+        if (EMR.CLINICS.length > CARD_LIMIT) {
+            const more = el("button", "clinic-card clinic-more tone-neutral");
+            more.type = "button";
+            more.setAttribute("aria-expanded", String(showAllClinics));
+            more.setAttribute("aria-controls", "clinicTabs");
+            const iconWrap = el("span", "clinic-card-icon");
+            iconWrap.appendChild(icon(showAllClinics ? "fa-solid fa-xmark" : "fa-solid fa-ellipsis"));
+            const text = el("span", "clinic-card-text");
+            text.append(
+                el("span", "clinic-card-name", showAllClinics ? "Show less" : "More"),
+                el("span", "clinic-card-count", showAllClinics ? "Back to " + CARD_LIMIT + " clinics" : "+" + hiddenCount + " more clinic" + (hiddenCount === 1 ? "" : "s"))
+            );
+            more.append(iconWrap, text, icon("fa-solid " + (showAllClinics ? "fa-chevron-up" : "fa-chevron-down") + " clinic-card-chevron"));
+            more.addEventListener("click", function () {
+                showAllClinics = !showAllClinics;
+                render();
+                const toggle = tabs.querySelector(".clinic-more");
+                if (toggle) toggle.focus();
+            });
+            tabs.appendChild(more);
+        }
     }
 
     function matchesTime(time, range) {
