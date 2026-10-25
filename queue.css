@@ -8,9 +8,11 @@
 /* ---------- Clinic cards ---------- */
 
 .clinic-cards {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between; /* spreads the cards evenly across the full row */
+    display: grid;
+    grid-auto-flow: column;
+    /* one row, one column per card */
+    grid-auto-columns: minmax(0, 1fr);
+    /* every card gets an equal share of the width */
     gap: 14px;
     margin-bottom: 22px;
 }
@@ -21,10 +23,9 @@
     align-items: center;
     justify-content: center;
     gap: 8px;
-    flex: 0 0 120px;
-    width: 120px;
-    aspect-ratio: 1 / 1;
-    min-height: 0;
+    width: 100%;
+    min-height: 120px;
+    /* same height for every card */
     padding: 10px;
     border: 1px solid var(--tone-border);
     border-radius: 10px;
@@ -81,7 +82,8 @@
 }
 
 .clinic-card-chevron {
-    display: none; /* square cards: the whole card is the click target */
+    display: none;
+    /* the whole card is the click target */
     color: var(--muted);
     font-size: 12px;
 }
@@ -105,23 +107,118 @@
 }
 
 /* Tones (light) */
-.tone-blue   { --tone-bg: #eaf1fd; --tone-border: #c9dbf8; --tone-icon-bg: #d6e4fb; --tone-icon: #1d5fd6; --tone-text: #0f1e3d; }
-.tone-purple { --tone-bg: #f4f0fd; --tone-border: #e2d8f8; --tone-icon-bg: #e7defb; --tone-icon: #6d3fd0; --tone-text: #0f1e3d; }
-.tone-green  { --tone-bg: #ecf8f1; --tone-border: #c9ecd7; --tone-icon-bg: #d3f0df; --tone-icon: #18a058; --tone-text: #127a44; }
-.tone-amber  { --tone-bg: #fff6e8; --tone-border: #fbe3bd; --tone-icon-bg: #fde8c4; --tone-icon: #f59e0b; --tone-text: #0f1e3d; }
-.tone-sky    { --tone-bg: #eef5ff; --tone-border: #cfe0fa; --tone-icon-bg: #d9e8fd; --tone-icon: #1d5fd6; --tone-text: #0f1e3d; }
-.tone-red    { --tone-bg: #fdeeee; --tone-border: #f7cfcf; --tone-icon-bg: #fbdada; --tone-icon: #e02424; --tone-text: #0f1e3d; }
+.tone-blue {
+    --tone-bg: #eaf1fd;
+    --tone-border: #c9dbf8;
+    --tone-icon-bg: #d6e4fb;
+    --tone-icon: #1d5fd6;
+    --tone-text: #0f1e3d;
+}
 
-.tone-neutral { --tone-bg: #f4f6fa; --tone-border: #dbe1ec; --tone-icon-bg: #e5e9f2; --tone-icon: #475569; --tone-text: #0f1e3d; }
+.tone-purple {
+    --tone-bg: #f4f0fd;
+    --tone-border: #e2d8f8;
+    --tone-icon-bg: #e7defb;
+    --tone-icon: #6d3fd0;
+    --tone-text: #0f1e3d;
+}
+
+.tone-green {
+    --tone-bg: #ecf8f1;
+    --tone-border: #c9ecd7;
+    --tone-icon-bg: #d3f0df;
+    --tone-icon: #18a058;
+    --tone-text: #127a44;
+}
+
+.tone-amber {
+    --tone-bg: #fff6e8;
+    --tone-border: #fbe3bd;
+    --tone-icon-bg: #fde8c4;
+    --tone-icon: #f59e0b;
+    --tone-text: #0f1e3d;
+}
+
+.tone-sky {
+    --tone-bg: #eef5ff;
+    --tone-border: #cfe0fa;
+    --tone-icon-bg: #d9e8fd;
+    --tone-icon: #1d5fd6;
+    --tone-text: #0f1e3d;
+}
+
+.tone-red {
+    --tone-bg: #fdeeee;
+    --tone-border: #f7cfcf;
+    --tone-icon-bg: #fbdada;
+    --tone-icon: #e02424;
+    --tone-text: #0f1e3d;
+}
+
+.tone-neutral {
+    --tone-bg: #f4f6fa;
+    --tone-border: #dbe1ec;
+    --tone-icon-bg: #e5e9f2;
+    --tone-icon: #475569;
+    --tone-text: #0f1e3d;
+}
 
 /* Tones (dark) */
-:root[data-theme="dark"] .tone-blue   { --tone-bg: #1b2b47; --tone-border: #2b4470; --tone-icon-bg: #24406b; --tone-icon: #7fb0ff; --tone-text: #e5e7eb; }
-:root[data-theme="dark"] .tone-purple { --tone-bg: #2a2347; --tone-border: #43386e; --tone-icon-bg: #3a2f63; --tone-icon: #b69cff; --tone-text: #e5e7eb; }
-:root[data-theme="dark"] .tone-green  { --tone-bg: #173229; --tone-border: #25513f; --tone-icon-bg: #1f4535; --tone-icon: #4ade80; --tone-text: #86efac; }
-:root[data-theme="dark"] .tone-amber  { --tone-bg: #34290f; --tone-border: #5a4618; --tone-icon-bg: #4a3a14; --tone-icon: #fbbf24; --tone-text: #e5e7eb; }
-:root[data-theme="dark"] .tone-sky    { --tone-bg: #19304a; --tone-border: #2a4d73; --tone-icon-bg: #22425f; --tone-icon: #7cc0ff; --tone-text: #e5e7eb; }
-:root[data-theme="dark"] .tone-neutral { --tone-bg: #1e2635; --tone-border: #334155; --tone-icon-bg: #2a3446; --tone-icon: #cbd5e1; --tone-text: #e5e7eb; }
-:root[data-theme="dark"] .tone-red    { --tone-bg: #3a1c1f; --tone-border: #62292e; --tone-icon-bg: #512328; --tone-icon: #f87171; --tone-text: #e5e7eb; }
+:root[data-theme="dark"] .tone-blue {
+    --tone-bg: #1b2b47;
+    --tone-border: #2b4470;
+    --tone-icon-bg: #24406b;
+    --tone-icon: #7fb0ff;
+    --tone-text: #e5e7eb;
+}
+
+:root[data-theme="dark"] .tone-purple {
+    --tone-bg: #2a2347;
+    --tone-border: #43386e;
+    --tone-icon-bg: #3a2f63;
+    --tone-icon: #b69cff;
+    --tone-text: #e5e7eb;
+}
+
+:root[data-theme="dark"] .tone-green {
+    --tone-bg: #173229;
+    --tone-border: #25513f;
+    --tone-icon-bg: #1f4535;
+    --tone-icon: #4ade80;
+    --tone-text: #86efac;
+}
+
+:root[data-theme="dark"] .tone-amber {
+    --tone-bg: #34290f;
+    --tone-border: #5a4618;
+    --tone-icon-bg: #4a3a14;
+    --tone-icon: #fbbf24;
+    --tone-text: #e5e7eb;
+}
+
+:root[data-theme="dark"] .tone-sky {
+    --tone-bg: #19304a;
+    --tone-border: #2a4d73;
+    --tone-icon-bg: #22425f;
+    --tone-icon: #7cc0ff;
+    --tone-text: #e5e7eb;
+}
+
+:root[data-theme="dark"] .tone-neutral {
+    --tone-bg: #1e2635;
+    --tone-border: #334155;
+    --tone-icon-bg: #2a3446;
+    --tone-icon: #cbd5e1;
+    --tone-text: #e5e7eb;
+}
+
+:root[data-theme="dark"] .tone-red {
+    --tone-bg: #3a1c1f;
+    --tone-border: #62292e;
+    --tone-icon-bg: #512328;
+    --tone-icon: #f87171;
+    --tone-text: #e5e7eb;
+}
 
 /* ---------- Queue card ---------- */
 
@@ -368,9 +465,20 @@
     white-space: nowrap;
 }
 
-.type-appointment { background: #efeafd; color: #6d3fd0; }
-.type-walk-in     { background: #e6f3fb; color: #0e7490; }
-.type-emergency   { background: #fde8e8; color: #c81e1e; }
+.type-appointment {
+    background: #efeafd;
+    color: #6d3fd0;
+}
+
+.type-walk-in {
+    background: #e6f3fb;
+    color: #0e7490;
+}
+
+.type-emergency {
+    background: #fde8e8;
+    color: #c81e1e;
+}
 
 .q-visit {
     font-size: 15px;
@@ -385,10 +493,25 @@
     white-space: nowrap;
 }
 
-.q-status.status-in-consultation { background: #e3edfd; color: #1d5fd6; }
-.q-status.status-checked-in      { background: #fef3c7; color: #92400e; }
-.q-status.status-scheduled       { background: #eef2f7; color: #475569; }
-.q-status.status-done            { background: #dcfce7; color: #166534; }
+.q-status.status-in-consultation {
+    background: #e3edfd;
+    color: #1d5fd6;
+}
+
+.q-status.status-checked-in {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.q-status.status-scheduled {
+    background: #eef2f7;
+    color: #475569;
+}
+
+.q-status.status-done {
+    background: #dcfce7;
+    color: #166534;
+}
 
 .q-actions {
     display: flex;
@@ -513,23 +636,54 @@
     cursor: default;
 }
 
-/* Square cards are a fixed 120px, spaced evenly across the row, and wrap when the content area is narrow.
-   On narrow phones they switch to 3 per row and fill the width, staying square. */
+/* Narrow content area: 3 equal cards per row, wrapping to a second row */
+@container (max-width: 700px) {
+    .clinic-cards {
+        grid-auto-flow: row;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+}
+
+/* Small phones: tighter cards */
 @container (max-width: 420px) {
-    .clinic-cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
-    .clinic-card { width: 100%; gap: 6px; padding: 6px; }
-    .clinic-card-icon { flex-basis: 32px; width: 32px; height: 32px; font-size: 14px; }
-    .clinic-card-name, .clinic-card-count { font-size: 12px; }
-    .clinic-card-count strong { font-size: 15px; }
+    .clinic-card {
+        gap: 6px;
+        padding: 6px;
+        min-height: 104px;
+    }
+
+    .clinic-card-icon {
+        flex-basis: 32px;
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .clinic-card-name,
+    .clinic-card-count {
+        font-size: 12px;
+    }
+
+    .clinic-card-count strong {
+        font-size: 15px;
+    }
 }
 
 @media (max-width: 1200px) {
-    .queue-filters { flex-wrap: wrap; }
-    .filter-btn { margin-left: 0; }
+    .queue-filters {
+        flex-wrap: wrap;
+    }
+
+    .filter-btn {
+        margin-left: 0;
+    }
 }
 
 @media (max-width: 700px) {
-    .queue-card-head { flex-wrap: wrap; }
+    .queue-card-head {
+        flex-wrap: wrap;
+    }
 }
 
 #queueError:empty {
@@ -541,10 +695,37 @@
 }
 
 /* Dark-mode badge colours */
-:root[data-theme="dark"] .type-appointment { background: #2e2553; color: #c4b5fd; }
-:root[data-theme="dark"] .type-walk-in     { background: #123445; color: #7dd3fc; }
-:root[data-theme="dark"] .type-emergency   { background: #4a1d1f; color: #fca5a5; }
-:root[data-theme="dark"] .q-status.status-in-consultation { background: #1e3a6b; color: #93c5fd; }
-:root[data-theme="dark"] .q-status.status-checked-in      { background: #4a3a10; color: #fcd34d; }
-:root[data-theme="dark"] .q-status.status-scheduled       { background: #334155; color: #cbd5e1; }
-:root[data-theme="dark"] .q-status.status-done            { background: #14532d; color: #86efac; }
+:root[data-theme="dark"] .type-appointment {
+    background: #2e2553;
+    color: #c4b5fd;
+}
+
+:root[data-theme="dark"] .type-walk-in {
+    background: #123445;
+    color: #7dd3fc;
+}
+
+:root[data-theme="dark"] .type-emergency {
+    background: #4a1d1f;
+    color: #fca5a5;
+}
+
+:root[data-theme="dark"] .q-status.status-in-consultation {
+    background: #1e3a6b;
+    color: #93c5fd;
+}
+
+:root[data-theme="dark"] .q-status.status-checked-in {
+    background: #4a3a10;
+    color: #fcd34d;
+}
+
+:root[data-theme="dark"] .q-status.status-scheduled {
+    background: #334155;
+    color: #cbd5e1;
+}
+
+:root[data-theme="dark"] .q-status.status-done {
+    background: #14532d;
+    color: #86efac;
+}
